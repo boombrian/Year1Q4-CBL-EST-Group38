@@ -6,13 +6,13 @@
 timeUnit   = 's';
 
 supplyFile = "Team38_supply.csv";
-supplyUnit = "kW";
+supplyUnit = "MW";   % CSV header says [MW] — was incorrectly set to kW!
 
 % load the supply data
 Supply = loadSupplyData(supplyFile, timeUnit, supplyUnit);
 
 demandFile = "Team38_demand.csv";
-demandUnit = "kW";
+demandUnit = "MW";   % CSV header says [MW] — was incorrectly set to kW!
 
 % load the demand data
 Demand = loadDemandData(demandFile, timeUnit, demandUnit);
@@ -39,12 +39,13 @@ eta_exp  = 0.85;                                        % [AI-GENERATED PLACEHOL
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
 
 p_store_max = 80 * unit("bar");                         % Maximum storage pressure in cavern
+T_tes_max   = 373 * unit("K");                          % Maximum TES temperature (boiling point of water)
 
 % TES parameters
 % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
 U_tes = 2.0;                                            % Overall heat transfer coeff [W/(m^2·K)] (Typical for insulated tanks)
 A_tes = 2500 * unit("m^2");                             % TES surface area [m^2] (Assuming a large cylindrical tank)
-m_tes = 5000000 * unit("kg");                           % Mass of TES storage medium (water) [kg] (approx 5000 m^3)
+m_tes = 20000000 * unit("kg");                           % Mass of TES storage medium (water) [kg] (approx 20000 m^3)
 
 % Pipe / flow parameters
 % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
@@ -53,7 +54,7 @@ v_flow = 20 * unit("m")/unit("s");                      % Flow velocity [m/s]
 
 % Cavern parameter
 % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
-V_cavern = 310000 * unit("m^3");                        % Cavern volume [m^3] (Based on Huntorf plant scale)
+V_cavern = 5000000 * unit("m^3");                        % Cavern volume [m^3] (Based on Huntorf plant scale)
 
 %% Initial Conditions
 
