@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[0, 25, 1440, 830]</P>
+  <P Name="ZoomFactor">228</P>
+  <Block BlockType="Inport" Name="P_extraction" SID="547">
+    <P Name="Position">[-10, 85, 80, 105]</P>
+    <P Name="ZOrder">9</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromExtraction</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Goto" Name="D_extraction" SID="549">
+    <P Name="Position">[335, 135, 425, 155]</P>
+    <P Name="ZOrder">385</P>
+    <P Name="ShowName">off</P>
+    <P Name="GotoTag">DExtraction</P>
+    <P Name="TagVisibility">global</P>
+  </Block>
+  <Block BlockType="Constant" Name="Extraction coefficient" SID="548">
+    <P Name="Position">[-10, 135, 80, 155]</P>
+    <P Name="ZOrder">11</P>
+    <P Name="Value">aExtraction</P>
+  </Block>
+  <Block BlockType="SubSystem" Name="Extraction system" SID="551">
+    <PortCounts in="2" out="2"/>
+    <P Name="Position">[130, 70, 275, 170]</P>
+    <P Name="ZOrder">10</P>
+    <P Name="ErrorFcn">Stateflow.Translate.translate</P>
+    <P Name="PermitHierarchicalResolution">ExplicitOnly</P>
+    <P Name="TreatAsAtomicUnit">on</P>
+    <P Name="SFBlockType">MATLAB Function</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoExtraction</P>
+      </Port>
+      <Port Type="out" Index="2">
+        <P Name="PropagatedSignals">DExtraction</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_551"/>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="725">
+    <PortCounts in="1"/>
+    <P Name="Position">[130, 30, 220, 50]</P>
+    <P Name="ZOrder">386</P>
+    <P Name="VariableName">PfromExtraction</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_from_storage" SID="553">
+    <P Name="Position">[335, 85, 425, 105]</P>
+    <P Name="ZOrder">8</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">1</P>
+    <P Name="Src">547#out:1</P>
+    <P Name="Points">[16, 0]</P>
+    <Branch>
+      <P Name="ZOrder">7</P>
+      <P Name="Points">[0, -55]</P>
+      <P Name="Dst">725#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">6</P>
+      <P Name="Dst">551#in:1</P>
+    </Branch>
+  </Line>
+  <Line>
+    <P Name="ZOrder">2</P>
+    <P Name="Src">551#out:1</P>
+    <P Name="Dst">553#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">3</P>
+    <P Name="Src">548#out:1</P>
+    <P Name="Dst">551#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">5</P>
+    <P Name="Src">551#out:2</P>
+    <P Name="Dst">549#in:1</P>
+  </Line>
+</System>

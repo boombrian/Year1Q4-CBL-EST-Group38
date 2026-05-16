@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="ScheduleCore" Target="ScheduleCore.xml" Type="http://schemas.mathworks.com/simulink/2013/relationships/ScheduleCore"/>
+  <Relationship Id="ScheduleEditor" Target="ScheduleEditor.xml" Type="http://schemas.mathworks.com/simulink/2013/relationships/ScheduleEditor"/>
+  <Relationship Id="controller1" Target="maskimages/controller1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="demand" Target="maskimages/demand.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="extraction1" Target="maskimages/extraction1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="graphicalInterface" Target="graphicalInterface.json" Type="http://schemas.mathworks.com/simulinkModel/2014/relationships/graphicalInterface"/>
+  <Relationship Id="injection1" Target="maskimages/injection1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="stateflow_machine" Target="stateflow/machine.xml" Type="http://schemas.mathworks.com/simulinkModel/2014/relationships/stateflowMachine"/>
+  <Relationship Id="storage1" Target="maskimages/storage1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="supply" Target="maskimages/supply.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="system_root" Target="systems/system_root.xml" Type="http://schemas.mathworks.com/simulink/2010/relationships/system"/>
+  <Relationship Id="transport_from_supply1" Target="maskimages/transport_from_supply1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="transport_to_demand1" Target="maskimages/transport_to_demand1.png" Type="http://schemas.mathworks.com/simulink/2018/relationships/maskImage"/>
+  <Relationship Id="windowsInfo" Target="windowsInfo.xml" Type="http://schemas.mathworks.com/simulinkModel/2019/relationships/windowsInfo"/>
+  <Relationship Id="x_simulink_resources_mwimg_0a930926_6c5d_4538_9020_6af419d7b84d" Target="resources/mwimg_0a930926-6c5d-4538-9020-6af419d7b84d.png" Type="http://schemas.mathworks.com/simulinkModel/2010/relationships/resources"/>
+</Relationships>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[223, 338, 826, 833]</P>
+  <P Name="SIDHighWatermark">35</P>
+  <Block BlockType="Inport" Name="PtoSupplyTransport" SID="497::1">
+    <P Name="Position">[20, 101, 40, 119]</P>
+    <P Name="ZOrder">-1</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Power from supply</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="aSupplyTransport" SID="497::25">
+    <P Name="Position">[20, 136, 40, 154]</P>
+    <P Name="ZOrder">16</P>
+    <P Name="Port">2</P>
+  </Block>
+  <Block BlockType="Demux" Name=" Demux " SID="497::34">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[270, 230, 320, 270]</P>
+    <P Name="ZOrder">25</P>
+    <P Name="Outputs">1</P>
+  </Block>
+  <Block BlockType="S-Function" Name=" SFunction " SID="497::33">
+    <P Name="Tag">Stateflow S-Function 2</P>
+    <PortCounts in="2" out="3"/>
+    <P Name="Position">[180, 100, 230, 180]</P>
+    <P Name="ZOrder">24</P>
+    <P Name="FunctionName">sf_sfun</P>
+    <P Name="PortCounts">[2 3]</P>
+    <P Name="SFunctionDeploymentMode">off</P>
+    <P Name="EnableBusSupport">off</P>
+    <P Name="SFcnIsStateOwnerBlock">off</P>
+    <PortProperties>
+      <Port Type="out" Index="2">
+        <P Name="Name">PfromSupplyTransport</P>
+      </Port>
+      <Port Type="out" Index="3">
+        <P Name="Name">DSupplyTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Terminator" Name=" Terminator " SID="497::35">
+    <P Name="Position">[460, 241, 480, 259]</P>
+    <P Name="ZOrder">26</P>
+  </Block>
+  <Block BlockType="Outport" Name="PfromSupplyTransport" SID="497::5">
+    <P Name="Position">[460, 101, 480, 119]</P>
+    <P Name="ZOrder">-5</P>
+  </Block>
+  <Block BlockType="Outport" Name="DSupplyTransport" SID="497::26">
+    <P Name="Position">[460, 136, 480, 154]</P>
+    <P Name="ZOrder">17</P>
+    <P Name="Port">2</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">19</P>
+    <P Name="Src">497::1#out:1</P>
+    <P Name="Points">[120, 0]</P>
+    <P Name="Dst">497::33#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">20</P>
+    <P Name="Src">497::25#out:1</P>
+    <P Name="Dst">497::33#in:2</P>
+  </Line>
+  <Line>
+    <P Name="Name">PfromSupplyTransport</P>
+    <P Name="ZOrder">21</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">497::33#out:2</P>
+    <P Name="Dst">497::5#in:1</P>
+  </Line>
+  <Line>
+    <P Name="Name">DSupplyTransport</P>
+    <P Name="ZOrder">22</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">497::33#out:3</P>
+    <P Name="Dst">497::26#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">23</P>
+    <P Name="Src">497::34#out:1</P>
+    <P Name="Dst">497::35#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">24</P>
+    <P Name="Src">497::33#out:1</P>
+    <P Name="Dst">497::34#in:1</P>
+  </Line>
+</System>

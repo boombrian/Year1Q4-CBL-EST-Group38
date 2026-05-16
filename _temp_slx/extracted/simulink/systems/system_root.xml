@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[-1, -7, 1537, 913]</P>
+  <P Name="ZoomFactor">102</P>
+  <P Name="ReportName">simulink-default.rpt</P>
+  <P Name="SIDHighWatermark">779</P>
+  <Block BlockType="ToWorkspace" Name="Buy" SID="667">
+    <PortCounts in="1"/>
+    <P Name="Position">[-696, 185, -664, 215]</P>
+    <P Name="ZOrder">404</P>
+    <P Name="BlockRotation">270</P>
+    <P Name="BlockMirror">on</P>
+    <P Name="NameLocation">left</P>
+    <P Name="ShowName">off</P>
+    <P Name="VariableName">PBuy</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="SubSystem" Name="Controller" SID="410">
+    <PortCounts in="3" out="4"/>
+    <P Name="Position">[-652, 67, -522, 199]</P>
+    <P Name="ZOrder">392</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out3&quot;,&quot;Out4&quot;]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;4daf33ce-c96a-4783-b5c4-228eed953e01&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;,&quot;In3&quot;,&quot;Out2&quot;],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;e9942e50-8467-4af8-b79b-80636cbc76e5&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;f315e931-d69b-4751-b712-f89c6c81baeb&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In2&quot;],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;44715ee6-5cd5-4669-bcb9-5ed7c869bdb3&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;fff48899-944b-4064-b7d7-ecc12144fb48&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/controller1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoInjection</P>
+      </Port>
+      <Port Type="out" Index="2">
+        <P Name="PropagatedSignals">PfromExtraction</P>
+      </Port>
+      <Port Type="out" Index="3">
+        <P Name="PropagatedSignals">PSell</P>
+      </Port>
+      <Port Type="out" Index="4">
+        <P Name="PropagatedSignals">PBuy</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_410"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Demand" SID="391">
+    <PortCounts out="1"/>
+    <P Name="Position">[-865, 272, -740, 398]</P>
+    <P Name="ZOrder">390</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/demand.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Power to demand</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_391"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Extraction system" SID="546">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[-431, 271, -305, 397]</P>
+    <P Name="ZOrder">401</P>
+    <P Name="BlockRotation">180</P>
+    <P Name="NameLocation">top</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;05c5933d-55fc-4e06-853f-fc26d42905f9&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;327426c5-31d5-498b-a2bd-83e49353408c&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;55306cf3-a3de-4385-a5ae-b8600ecdd5a2&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;08fcc9c3-40d3-4ac6-b914-dfeef6039ffb&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;cb35d5ba-e8c6-462c-b7b2-fe8356d4b0a1&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/extraction1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoExtraction</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_546"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Injection system" SID="699">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[-433, -132, -307, -6]</P>
+    <P Name="ZOrder">406</P>
+    <P Name="BlockRotation">180</P>
+    <P Name="NameLocation">top</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;05c5933d-55fc-4e06-853f-fc26d42905f9&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;327426c5-31d5-498b-a2bd-83e49353408c&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;55306cf3-a3de-4385-a5ae-b8600ecdd5a2&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;08fcc9c3-40d3-4ac6-b914-dfeef6039ffb&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;cb35d5ba-e8c6-462c-b7b2-fe8356d4b0a1&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/injection1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromInjection</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_699"/>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="Sell" SID="666">
+    <PortCounts in="1"/>
+    <P Name="Position">[-695, 50, -665, 80]</P>
+    <P Name="ZOrder">403</P>
+    <P Name="BlockRotation">270</P>
+    <P Name="NameLocation">right</P>
+    <P Name="ShowName">off</P>
+    <P Name="VariableName">PSell</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="SubSystem" Name="Storage containment system" SID="19">
+    <PortCounts in="2" out="1"/>
+    <P Name="Position">[-431, 71, -305, 197]</P>
+    <P Name="ZOrder">7</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;0ba48424-33b9-4934-970f-64fe5d8b070e&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;9cde340f-8f39-4499-9a12-5e1623737660&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;2af8db04-7fd0-4902-8637-8dc00edb4598&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In2&quot;],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;e21ea806-d777-41a3-a53f-556fae66854b&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;4e2ddb36-4db3-4ab4-858b-ebb8ccefeb1f&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/storage1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Stored energy</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_19"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Supply" SID="369">
+    <PortCounts out="1"/>
+    <P Name="Position">[-865, -133, -740, -7]</P>
+    <P Name="ZOrder">389</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/supply.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Power from supply</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_369"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Transport from supply" SID="4">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[-650, -134, -524, -8]</P>
+    <P Name="ZOrder">2</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;31329006-3d36-4d93-9c44-7503a515d397&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;aba139c7-f9b6-4881-a56b-a4cbbedacd88&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;e683eb73-7a35-4160-9c39-da83856a6278&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;1170dd18-447c-437f-9043-6812c2877331&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;804af608-1d70-444f-af69-e05f19bf98f3&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/transport_from_supply1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromSupplyTransport</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_4"/>
+  </Block>
+  <Block BlockType="SubSystem" Name="Transport to demand" SID="540">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[-650, 271, -524, 397]</P>
+    <P Name="ZOrder">400</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <P Name="PortSchema">{&quot;entries&quot;:[{&quot;content&quot;:{&quot;sides&quot;:[{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;In1&quot;]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;31329006-3d36-4d93-9c44-7503a515d397&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;RIGHT&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;aba139c7-f9b6-4881-a56b-a4cbbedacd88&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[&quot;Out1&quot;],&quot;side&quot;:&quot;TOP&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;e683eb73-7a35-4160-9c39-da83856a6278&quot;},{&quot;content&quot;:{&quot;connectorIds&quot;:[],&quot;side&quot;:&quot;BOTTOM&quot;},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedRectSide&quot;,&quot;uuid&quot;:&quot;c378138f-7233-4483-870c-40a69b3495ee&quot;}]},&quot;type&quot;:&quot;ConnectorPlacement.EquallySpacedConnector&quot;,&quot;uuid&quot;:&quot;804af608-1d70-444f-af69-e05f19bf98f3&quot;}],&quot;packageUris&quot;:[&quot;http://schema.mathworks.com/mf0/Connector/R2020b&quot;],&quot;version&quot;:&quot;1.0&quot;}</P>
+    <Mask>
+      <Display PortRotate="physical">image(&apos;$imagefile&apos;); % Use &quot;Edit Image&quot; on toolstrip to change.</Display>
+      <SaveImageFileWithModel>on</SaveImageFileWithModel>
+      <StringList PropName="ImageFiles">
+        <String>slx:/simulink/maskimages/transport_to_demand1.png</String>
+      </StringList>
+    </Mask>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoDemandTransport</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_540"/>
+  </Block>
+  <Line>
+    <P Name="ZOrder">544</P>
+    <P Name="Src">369#out:1</P>
+    <P Name="Dst">4#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">702</P>
+    <P Name="Src">4#out:1</P>
+    <P Name="Dst">410#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">704</P>
+    <P Name="Src">540#out:1</P>
+    <P Name="Dst">410#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">706</P>
+    <P Name="Src">391#out:1</P>
+    <P Name="Dst">540#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">728</P>
+    <P Name="Src">410#out:3</P>
+    <P Name="Points">[-23, 0]</P>
+    <P Name="Dst">666#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">712</P>
+    <P Name="Src">410#out:2</P>
+    <P Name="Points">[32, 0; 0, 155]</P>
+    <P Name="Dst">546#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">748</P>
+    <P Name="Src">699#out:1</P>
+    <P Name="Dst">19#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">737</P>
+    <P Name="Src">546#out:1</P>
+    <P Name="Dst">19#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">735</P>
+    <P Name="Src">19#out:1</P>
+    <P Name="Dst">410#in:3</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">749</P>
+    <P Name="Src">410#out:1</P>
+    <P Name="Points">[39, 0; 0, -160]</P>
+    <P Name="Dst">699#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">763</P>
+    <P Name="Src">410#out:4</P>
+    <P Name="Points">[-23, 0]</P>
+    <P Name="Dst">667#in:1</P>
+  </Line>
+  <Annotation SID="739">
+    <P Name="Position">[-898, -162, -274, 411]</P>
+    <P Name="InternalMargins">[0, 0, 0, 0]</P>
+    <P Name="ImagePath">[$unpackedFolder]/simulink/resources/mwimg_0a930926-6c5d-4538-9020-6af419d7b84d.png</P>
+    <P Name="FixedHeight">on</P>
+    <P Name="FixedWidth">on</P>
+    <P Name="AnnotationType">image_annotation</P>
+    <P Name="ZOrder">-1</P>
+  </Annotation>
+  <Annotation SID="477">
+    <P Name="Position">[-894, -161, -273, 410]</P>
+    <P Name="InternalMargins">[0, 0, 0, 0]</P>
+    <P Name="FixedHeight">on</P>
+    <P Name="FixedWidth">on</P>
+    <P Name="ForegroundColor">white</P>
+    <P Name="DropShadow">on</P>
+    <P Name="AnnotationType">area_annotation</P>
+    <P Name="ZOrder">3935</P>
+    <P Name="FontName">Arial</P>
+    <P Name="FontSize">12</P>
+  </Annotation>
+</System>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[0, 25, 1440, 830]</P>
+  <P Name="ZoomFactor">154</P>
+  <Block BlockType="FromWorkspace" Name="From&#xA;Workspace" SID="717">
+    <P Name="Position">[700, 293, 765, 317]</P>
+    <P Name="ZOrder">407</P>
+    <P Name="VariableName">Demand</P>
+    <P Name="OutputAfterFinalValue">Setting to zero</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="Name">Power to demand</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="719">
+    <PortCounts in="1"/>
+    <P Name="Position">[885, 340, 995, 360]</P>
+    <P Name="ZOrder">408</P>
+    <P Name="VariableName">PDemand</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Outport" Name="Out1" SID="404">
+    <P Name="Position">[885, 298, 995, 312]</P>
+    <P Name="ZOrder">404</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Line>
+    <P Name="Name">Power to demand</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ZOrder">22</P>
+    <P Name="Src">717#out:1</P>
+    <P Name="Points">[44, 0]</P>
+    <Branch>
+      <P Name="ZOrder">24</P>
+      <P Name="Points">[0, 45]</P>
+      <P Name="Dst">719#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">23</P>
+      <P Name="Labels">[1, 0]</P>
+      <P Name="Dst">404#in:1</P>
+    </Branch>
+  </Line>
+</System>

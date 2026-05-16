@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[0, 25, 1440, 830]</P>
+  <P Name="ZoomFactor">175</P>
+  <Block BlockType="FromWorkspace" Name="From&#xA;Workspace" SID="716">
+    <P Name="Position">[360, 178, 425, 202]</P>
+    <P Name="ZOrder">401</P>
+    <P Name="VariableName">Supply</P>
+    <P Name="OutputAfterFinalValue">Setting to zero</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="Name">Power from supply</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="718">
+    <PortCounts in="1"/>
+    <P Name="Position">[530, 230, 620, 250]</P>
+    <P Name="ZOrder">402</P>
+    <P Name="VariableName">PSupply</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Outport" Name="Power from supply" SID="390">
+    <P Name="Position">[530, 180, 620, 200]</P>
+    <P Name="ZOrder">398</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Line>
+    <P Name="Name">Power from supply</P>
+    <P Name="FontName">Arial</P>
+    <P Name="ZOrder">23</P>
+    <P Name="Labels">[0, 1]</P>
+    <P Name="Src">716#out:1</P>
+    <P Name="Points">[45, 0]</P>
+    <Branch>
+      <P Name="ZOrder">26</P>
+      <P Name="Points">[0, 50]</P>
+      <P Name="Dst">718#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">25</P>
+      <P Name="Dst">390#in:1</P>
+    </Branch>
+  </Line>
+</System>

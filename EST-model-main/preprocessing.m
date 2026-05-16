@@ -35,27 +35,30 @@ n_poly = 1.1;                                           % Polytropic index (near
 
 eta_tran = 0.97;                                        % Transmission efficiency
 eta_comp = 0.833;                                       % Compressor efficiency
-eta_exp  = 0.85;                                        % Expander efficiency (TODO: finalise)
+eta_exp  = 0.85;                                        % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST] Expander efficiency
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
 
 p_store_max = 80 * unit("bar");                         % Maximum storage pressure in cavern
 
-% TES parameters (TODO: fill in actual values)
-U_tes = 0;    % Overall heat transfer coefficient [W/(m^2·K)]
-A_tes = 0;    % TES surface area [m^2]
-m_tes = 0;    % Mass of TES storage medium [kg]
+% TES parameters
+% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
+U_tes = 2.0;                                            % Overall heat transfer coeff [W/(m^2·K)] (Typical for insulated tanks)
+A_tes = 2500 * unit("m^2");                             % TES surface area [m^2] (Assuming a large cylindrical tank)
+m_tes = 5000000 * unit("kg");                           % Mass of TES storage medium (water) [kg] (approx 5000 m^3)
 
-% Pipe / flow parameters (TODO: fill in actual values)
-D_pipe = 0;   % Pipe diameter [m]
-v_flow = 0;   % Flow velocity [m/s]
+% Pipe / flow parameters
+% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
+D_pipe = 0.5 * unit("m");                               % Pipe diameter [m]
+v_flow = 20 * unit("m")/unit("s");                      % Flow velocity [m/s]
 
-% Cavern parameter (TODO: fill in actual value)
-V_cavern = 0; % Cavern volume [m^3]
+% Cavern parameter
+% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
+V_cavern = 310000 * unit("m^3");                        % Cavern volume [m^3] (Based on Huntorf plant scale)
 
 %% Initial Conditions
 
 T_tes_initial    = T_amb;                               % Initial TES temperature [K]
-p_store_initial  = 10 * unit("bar");                    % Initial cavern pressure [Pa] (TODO: finalise)
+p_store_initial  = 40 * unit("bar");                    % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST] Initial cavern pressure [Pa] (40 bar is mid-range)
 
 %% Derived Quantities (computed from above)
 

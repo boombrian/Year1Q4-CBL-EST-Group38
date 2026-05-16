@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[0, 25, 1440, 830]</P>
+  <P Name="ZoomFactor">91</P>
+  <Block BlockType="Inport" Name="P_to_controller" SID="418">
+    <P Name="Position">[145, 150, 245, 170]</P>
+    <P Name="ZOrder">399</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Port number and signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromSupplyTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="P_from_controller" SID="419">
+    <P Name="Position">[145, 190, 245, 210]</P>
+    <P Name="ZOrder">400</P>
+    <P Name="ShowName">off</P>
+    <P Name="Port">2</P>
+    <P Name="IconDisplay">Port number and signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoDemandTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="Stored energy" SID="493">
+    <P Name="Position">[150, 230, 250, 250]</P>
+    <P Name="ZOrder">410</P>
+    <P Name="ShowName">off</P>
+    <P Name="Port">3</P>
+    <P Name="IconDisplay">Signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Stored energy</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="SubSystem" Name="Controller" SID="483">
+    <PortCounts in="5" out="4"/>
+    <P Name="Position">[280, 138, 465, 342]</P>
+    <P Name="ZOrder">403</P>
+    <P Name="ErrorFcn">Stateflow.Translate.translate</P>
+    <P Name="PermitHierarchicalResolution">ExplicitOnly</P>
+    <P Name="TreatAsAtomicUnit">on</P>
+    <P Name="SFBlockType">MATLAB Function</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoInjection</P>
+      </Port>
+      <Port Type="out" Index="2">
+        <P Name="PropagatedSignals">PfromExtraction</P>
+      </Port>
+      <Port Type="out" Index="3">
+        <P Name="PropagatedSignals">PSell</P>
+      </Port>
+      <Port Type="out" Index="4">
+        <P Name="PropagatedSignals">PBuy</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_483"/>
+  </Block>
+  <Block BlockType="From" Name="D_extraction" SID="683">
+    <P Name="Position">[685, 314, 840, 336]</P>
+    <P Name="ZOrder">422</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="GotoTag">DExtraction</P>
+    <P Name="TagVisibility">global</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">DExtraction</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="From" Name="D_injection" SID="684">
+    <P Name="Position">[685, 244, 840, 266]</P>
+    <P Name="ZOrder">421</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="GotoTag">DInjection</P>
+    <P Name="TagVisibility">global</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">DInjection</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="From" Name="D_storage" SID="685">
+    <P Name="Position">[685, 279, 840, 301]</P>
+    <P Name="ZOrder">424</P>
+    <P Name="ShowName">off</P>
+    <P Name="GotoTag">DStorage</P>
+    <P Name="TagVisibility">global</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">DStorage</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="From" Name="D_transport_from_supply" SID="686">
+    <P Name="Position">[685, 169, 840, 191]</P>
+    <P Name="ZOrder">420</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="GotoTag">DSupplyTransport</P>
+    <P Name="TagVisibility">global</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">DSupplyTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="From" Name="D_transport_to_demand" SID="687">
+    <P Name="Position">[685, 204, 840, 226]</P>
+    <P Name="ZOrder">423</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="GotoTag">DDemandTransport</P>
+    <P Name="TagVisibility">global</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">DDemandTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="Dissipated energy" SID="688">
+    <PortCounts in="1"/>
+    <P Name="Position">[1000, 227, 1110, 253]</P>
+    <P Name="ZOrder">425</P>
+    <P Name="ShowName">off</P>
+    <P Name="VariableName">D</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Constant" Name="Maximum energy storage" SID="559">
+    <P Name="Position">[150, 270, 250, 290]</P>
+    <P Name="ZOrder">417</P>
+    <P Name="ShowName">off</P>
+    <P Name="Value">EStorageMax</P>
+  </Block>
+  <Block BlockType="Constant" Name="Minimum energy storage" SID="558">
+    <P Name="Position">[150, 311, 250, 329]</P>
+    <P Name="ZOrder">416</P>
+    <P Name="ShowName">off</P>
+    <P Name="Value">EStorageMin</P>
+  </Block>
+  <Block BlockType="Sum" Name="Sum1" SID="726">
+    <PortCounts in="2" out="1"/>
+    <P Name="Position">[875, 191, 905, 224]</P>
+    <P Name="ZOrder">428</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="IconShape">rectangular</P>
+  </Block>
+  <Block BlockType="Sum" Name="Sum2" SID="727">
+    <PortCounts in="3" out="1"/>
+    <P Name="Position">[875, 250, 905, 280]</P>
+    <P Name="ZOrder">429</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="IconShape">rectangular</P>
+    <P Name="Inputs">+++</P>
+  </Block>
+  <Block BlockType="Sum" Name="Sum3" SID="728">
+    <PortCounts in="2" out="1"/>
+    <P Name="Position">[930, 222, 960, 253]</P>
+    <P Name="ZOrder">430</P>
+    <P Name="ShowName">off</P>
+    <P Name="FontName">Arial</P>
+    <P Name="IconShape">rectangular</P>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="729">
+    <PortCounts in="1"/>
+    <P Name="Position">[930, 277, 1020, 303]</P>
+    <P Name="ZOrder">431</P>
+    <P Name="VariableName">DStorage</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace1" SID="730">
+    <PortCounts in="1"/>
+    <P Name="Position">[930, 172, 1020, 198]</P>
+    <P Name="ZOrder">432</P>
+    <P Name="VariableName">DTransport</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_injection" SID="487">
+    <P Name="Position">[500, 155, 600, 175]</P>
+    <P Name="ZOrder">404</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_extraction" SID="490">
+    <P Name="Position">[500, 205, 600, 225]</P>
+    <P Name="ZOrder">407</P>
+    <P Name="ShowName">off</P>
+    <P Name="Port">2</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_sell" SID="534">
+    <P Name="Position">[500, 255, 600, 275]</P>
+    <P Name="ZOrder">415</P>
+    <P Name="ShowName">off</P>
+    <P Name="Port">3</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_buy" SID="488">
+    <P Name="Position">[500, 305, 600, 325]</P>
+    <P Name="ZOrder">405</P>
+    <P Name="ShowName">off</P>
+    <P Name="Port">4</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">102</P>
+    <P Name="Src">419#out:1</P>
+    <P Name="Dst">483#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">72</P>
+    <P Name="Src">483#out:2</P>
+    <P Name="Dst">490#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">73</P>
+    <P Name="Src">483#out:3</P>
+    <P Name="Dst">534#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">74</P>
+    <P Name="Src">483#out:4</P>
+    <P Name="Dst">488#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">80</P>
+    <P Name="Src">558#out:1</P>
+    <P Name="Dst">483#in:5</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">79</P>
+    <P Name="Src">559#out:1</P>
+    <P Name="Dst">483#in:4</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">167</P>
+    <P Name="Src">418#out:1</P>
+    <P Name="Dst">483#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">116</P>
+    <P Name="Src">483#out:1</P>
+    <P Name="Dst">487#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">128</P>
+    <P Name="Src">493#out:1</P>
+    <P Name="Dst">483#in:3</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">179</P>
+    <P Name="Src">687#out:1</P>
+    <P Name="Dst">726#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">178</P>
+    <P Name="Src">686#out:1</P>
+    <P Name="Points">[10, 0; 0, 20]</P>
+    <P Name="Dst">726#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">182</P>
+    <P Name="Src">684#out:1</P>
+    <P Name="Dst">727#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">183</P>
+    <P Name="Src">685#out:1</P>
+    <P Name="Points">[5, 0; 0, -25]</P>
+    <P Name="Dst">727#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">184</P>
+    <P Name="Src">683#out:1</P>
+    <P Name="Points">[14, 0; 0, -50]</P>
+    <P Name="Dst">727#in:3</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">185</P>
+    <P Name="Src">727#out:1</P>
+    <P Name="Points">[5, 0]</P>
+    <Branch>
+      <P Name="ZOrder">189</P>
+      <P Name="Dst">729#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">188</P>
+      <P Name="Dst">728#in:2</P>
+    </Branch>
+  </Line>
+  <Line>
+    <P Name="ZOrder">186</P>
+    <P Name="Src">726#out:1</P>
+    <P Name="Points">[5, 0]</P>
+    <Branch>
+      <P Name="ZOrder">191</P>
+      <P Name="Dst">730#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">190</P>
+      <P Name="Dst">728#in:1</P>
+    </Branch>
+  </Line>
+  <Line>
+    <P Name="ZOrder">187</P>
+    <P Name="Src">728#out:1</P>
+    <P Name="Dst">688#in:1</P>
+  </Line>
+  <Annotation SID="705">
+    <P Name="Name">Dissipated energy</P>
+    <P Name="Position">[673, 125, 1123, 365]</P>
+    <P Name="InternalMargins">[0, 0, 0, 0]</P>
+    <P Name="FixedHeight">on</P>
+    <P Name="FixedWidth">on</P>
+    <P Name="ForegroundColor">[0.901961, 0.901961, 0.901961]</P>
+    <P Name="BackgroundColor">[0.901961, 0.901961, 0.901961]</P>
+    <P Name="DropShadow">on</P>
+    <P Name="AnnotationType">area_annotation</P>
+    <P Name="ZOrder">240</P>
+    <P Name="FontSize">12</P>
+  </Annotation>
+  <Annotation SID="690">
+    <P Name="Name">Controller</P>
+    <P Name="Position">[24, 126, 649, 366]</P>
+    <P Name="InternalMargins">[0, 0, 0, 0]</P>
+    <P Name="FixedHeight">on</P>
+    <P Name="FixedWidth">on</P>
+    <P Name="ForegroundColor">[0.901961, 0.901961, 0.901961]</P>
+    <P Name="BackgroundColor">[0.901961, 0.901961, 0.901961]</P>
+    <P Name="DropShadow">on</P>
+    <P Name="AnnotationType">area_annotation</P>
+    <P Name="ZOrder">241</P>
+    <P Name="FontSize">12</P>
+  </Annotation>
+</System>

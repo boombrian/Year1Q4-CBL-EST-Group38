@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[-2, 25, 1438, 830]</P>
+  <P Name="ZoomFactor">200</P>
+  <Block BlockType="Inport" Name="P_injection" SID="700">
+    <P Name="Position">[0, 85, 90, 105]</P>
+    <P Name="ZOrder">9</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoInjection</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Goto" Name="D_injection" SID="701">
+    <P Name="Position">[325, 135, 415, 155]</P>
+    <P Name="ZOrder">385</P>
+    <P Name="ShowName">off</P>
+    <P Name="GotoTag">DInjection</P>
+    <P Name="TagVisibility">global</P>
+  </Block>
+  <Block BlockType="Constant" Name="Injection coefficient" SID="702">
+    <P Name="Position">[0, 135, 90, 155]</P>
+    <P Name="ZOrder">11</P>
+    <P Name="Value">aInjection</P>
+  </Block>
+  <Block BlockType="SubSystem" Name="Injection system" SID="703">
+    <PortCounts in="2" out="2"/>
+    <P Name="Position">[135, 70, 280, 170]</P>
+    <P Name="ZOrder">10</P>
+    <P Name="ErrorFcn">Stateflow.Translate.translate</P>
+    <P Name="PermitHierarchicalResolution">ExplicitOnly</P>
+    <P Name="TreatAsAtomicUnit">on</P>
+    <P Name="SFBlockType">MATLAB Function</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromInjection</P>
+      </Port>
+      <Port Type="out" Index="2">
+        <P Name="PropagatedSignals">DInjection</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_703"/>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="724">
+    <PortCounts in="1"/>
+    <P Name="Position">[135, 30, 225, 50]</P>
+    <P Name="ZOrder">386</P>
+    <P Name="VariableName">PtoInjection</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="FixptAsFi">on</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_to" SID="704">
+    <P Name="Position">[325, 85, 415, 105]</P>
+    <P Name="ZOrder">8</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Port number and signal name</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">1</P>
+    <P Name="Src">700#out:1</P>
+    <P Name="Points">[13, 0]</P>
+    <Branch>
+      <P Name="ZOrder">6</P>
+      <P Name="Points">[0, -55]</P>
+      <P Name="Dst">724#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">5</P>
+      <P Name="Dst">703#in:1</P>
+    </Branch>
+  </Line>
+  <Line>
+    <P Name="ZOrder">2</P>
+    <P Name="Src">703#out:1</P>
+    <P Name="Dst">704#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">3</P>
+    <P Name="Src">702#out:1</P>
+    <P Name="Dst">703#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">4</P>
+    <P Name="Src">703#out:2</P>
+    <P Name="Dst">701#in:1</P>
+  </Line>
+</System>
