@@ -27,3 +27,20 @@ unit("Wh")  = unit("W") *unit("h");
 unit("kWh") = unit("kW")*unit("h");
 unit("MWh") = unit("MW")*unit("h");
 unit("GWh") = unit("GW")*unit("h");
+
+% pressure
+unit("Pa")  = 1.;
+unit("kPa") = 1000*unit("Pa");
+unit("MPa") = 1000*unit("kPa");
+unit("bar") = 1e5*unit("Pa");
+
+% temperature
+unit("K") = 1.;
+
+% mass
+unit("kg") = 1.;
+
+% length, area, volume
+unit("m")   = 1.;
+unit("m^2") = 1.;
+unit("m^3") = 1.;
