@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[-2, 25, 1438, 830]</P>
+  <P Name="ZoomFactor">203</P>
+  <Block BlockType="Inport" Name="P_from_supply" SID="537">
+    <P Name="Position">[340, 295, 480, 315]</P>
+    <P Name="ZOrder">390</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Power from supply</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Goto" Name="Goto" SID="539">
+    <P Name="Position">[840, 345, 980, 365]</P>
+    <P Name="ZOrder">392</P>
+    <P Name="GotoTag">DSupplyTransport</P>
+    <P Name="TagVisibility">global</P>
+  </Block>
+  <Block BlockType="ToWorkspace" Name="To Workspace" SID="722">
+    <PortCounts in="1"/>
+    <P Name="Position">[840, 254, 980, 276]</P>
+    <P Name="ZOrder">427</P>
+    <P Name="VariableName">PfromSupplyTransport</P>
+    <P Name="MaxDataPoints">inf</P>
+    <P Name="SampleTime">-1</P>
+  </Block>
+  <Block BlockType="SubSystem" Name="Transport from supply" SID="497">
+    <PortCounts in="2" out="2"/>
+    <P Name="Position">[535, 280, 785, 380]</P>
+    <P Name="ZOrder">387</P>
+    <P Name="HideAutomaticName">off</P>
+    <P Name="ErrorFcn">Stateflow.Translate.translate</P>
+    <P Name="PermitHierarchicalResolution">ExplicitOnly</P>
+    <P Name="TreatAsAtomicUnit">on</P>
+    <P Name="SFBlockType">MATLAB Function</P>
+    <P Name="ContentPreviewEnabled">on</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromSupplyTransport</P>
+      </Port>
+      <Port Type="out" Index="2">
+        <P Name="PropagatedSignals">DSupplyTransport</P>
+      </Port>
+    </PortProperties>
+    <System Ref="system_497"/>
+  </Block>
+  <Block BlockType="Constant" Name="Transport from supply coefficient" SID="498">
+    <P Name="Position">[340, 345, 480, 365]</P>
+    <P Name="ZOrder">388</P>
+    <P Name="Value">aSupplyTransport</P>
+  </Block>
+  <Block BlockType="Outport" Name="P_to_controller" SID="538">
+    <P Name="Position">[840, 295, 980, 315]</P>
+    <P Name="ZOrder">391</P>
+    <P Name="ShowName">off</P>
+    <P Name="IconDisplay">Signal name</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">27</P>
+    <P Name="Src">498#out:1</P>
+    <P Name="Dst">497#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">28</P>
+    <P Name="Src">537#out:1</P>
+    <P Name="Dst">497#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">29</P>
+    <P Name="Src">497#out:1</P>
+    <P Name="Points">[19, 0]</P>
+    <Branch>
+      <P Name="ZOrder">32</P>
+      <P Name="Points">[0, -40]</P>
+      <P Name="Dst">722#in:1</P>
+    </Branch>
+    <Branch>
+      <P Name="ZOrder">31</P>
+      <P Name="Dst">538#in:1</P>
+    </Branch>
+  </Line>
+  <Line>
+    <P Name="ZOrder">30</P>
+    <P Name="Src">497#out:2</P>
+    <P Name="Dst">539#in:1</P>
+  </Line>
+</System>

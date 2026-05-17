@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[223, 338, 826, 833]</P>
+  <P Name="SIDHighWatermark">36</P>
+  <Block BlockType="Inport" Name="PtoStorage" SID="669::1">
+    <P Name="Position">[20, 101, 40, 119]</P>
+    <P Name="ZOrder">-1</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromInjection</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="PfromStorage" SID="669::25">
+    <P Name="Position">[20, 136, 40, 154]</P>
+    <P Name="ZOrder">16</P>
+    <P Name="Port">2</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoExtraction</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="bStorage" SID="669::30">
+    <P Name="Position">[20, 171, 40, 189]</P>
+    <P Name="ZOrder">21</P>
+    <P Name="Port">3</P>
+  </Block>
+  <Block BlockType="Inport" Name="EStorageMin" SID="669::29">
+    <P Name="Position">[20, 206, 40, 224]</P>
+    <P Name="ZOrder">20</P>
+    <P Name="Port">4</P>
+  </Block>
+  <Block BlockType="Inport" Name="EStorage" SID="669::27">
+    <P Name="Position">[20, 246, 40, 264]</P>
+    <P Name="ZOrder">18</P>
+    <P Name="Port">5</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Stored energy</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Demux" Name=" Demux " SID="669::35">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[270, 230, 320, 270]</P>
+    <P Name="ZOrder">26</P>
+    <P Name="Outputs">1</P>
+  </Block>
+  <Block BlockType="S-Function" Name=" SFunction " SID="669::34">
+    <P Name="Tag">Stateflow S-Function 5</P>
+    <PortCounts in="5" out="3"/>
+    <P Name="Position">[180, 100, 230, 220]</P>
+    <P Name="ZOrder">25</P>
+    <P Name="FunctionName">sf_sfun</P>
+    <P Name="PortCounts">[5 3]</P>
+    <P Name="SFunctionDeploymentMode">off</P>
+    <P Name="EnableBusSupport">off</P>
+    <P Name="SFcnIsStateOwnerBlock">off</P>
+    <PortProperties>
+      <Port Type="out" Index="2">
+        <P Name="Name">DStorage</P>
+      </Port>
+      <Port Type="out" Index="3">
+        <P Name="Name">EdotStorage</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Terminator" Name=" Terminator " SID="669::36">
+    <P Name="Position">[460, 241, 480, 259]</P>
+    <P Name="ZOrder">27</P>
+  </Block>
+  <Block BlockType="Outport" Name="DStorage" SID="669::5">
+    <P Name="Position">[460, 101, 480, 119]</P>
+    <P Name="ZOrder">-5</P>
+  </Block>
+  <Block BlockType="Outport" Name="EdotStorage" SID="669::28">
+    <P Name="Position">[460, 136, 480, 154]</P>
+    <P Name="ZOrder">19</P>
+    <P Name="Port">2</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">148</P>
+    <P Name="Src">669::1#out:1</P>
+    <P Name="Dst">669::34#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">149</P>
+    <P Name="Src">669::25#out:1</P>
+    <P Name="Dst">669::34#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">150</P>
+    <P Name="Src">669::30#out:1</P>
+    <P Name="Dst">669::34#in:3</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">151</P>
+    <P Name="Src">669::29#out:1</P>
+    <P Name="Dst">669::34#in:4</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">152</P>
+    <P Name="Src">669::27#out:1</P>
+    <P Name="Dst">669::34#in:5</P>
+  </Line>
+  <Line>
+    <P Name="Name">DStorage</P>
+    <P Name="ZOrder">153</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">669::34#out:2</P>
+    <P Name="Dst">669::5#in:1</P>
+  </Line>
+  <Line>
+    <P Name="Name">EdotStorage</P>
+    <P Name="ZOrder">154</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">669::34#out:3</P>
+    <P Name="Dst">669::28#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">155</P>
+    <P Name="Src">669::35#out:1</P>
+    <P Name="Dst">669::36#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">156</P>
+    <P Name="Src">669::34#out:1</P>
+    <P Name="Points">[20, 0]</P>
+    <P Name="Dst">669::35#in:1</P>
+  </Line>
+</System>

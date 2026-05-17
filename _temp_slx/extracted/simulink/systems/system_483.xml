@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<System>
+  <P Name="Location">[223, 338, 826, 833]</P>
+  <P Name="SIDHighWatermark">57</P>
+  <Block BlockType="Inport" Name="PtoController" SID="483::31">
+    <P Name="Position">[20, 101, 40, 119]</P>
+    <P Name="ZOrder">22</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PfromSupplyTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="PfromController" SID="483::1">
+    <P Name="Position">[20, 136, 40, 154]</P>
+    <P Name="ZOrder">-1</P>
+    <P Name="Port">2</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">PtoDemandTransport</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="EStorage" SID="483::25">
+    <P Name="Position">[20, 171, 40, 189]</P>
+    <P Name="ZOrder">16</P>
+    <P Name="Port">3</P>
+    <PortProperties>
+      <Port Type="out" Index="1">
+        <P Name="PropagatedSignals">Stored energy</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Inport" Name="EStrorageMax" SID="483::43">
+    <P Name="Position">[20, 206, 40, 224]</P>
+    <P Name="ZOrder">29</P>
+    <P Name="Port">4</P>
+  </Block>
+  <Block BlockType="Inport" Name="EStrorageMin" SID="483::44">
+    <P Name="Position">[20, 246, 40, 264]</P>
+    <P Name="ZOrder">30</P>
+    <P Name="Port">5</P>
+  </Block>
+  <Block BlockType="Demux" Name=" Demux " SID="483::56">
+    <PortCounts in="1" out="1"/>
+    <P Name="Position">[270, 280, 320, 320]</P>
+    <P Name="ZOrder">40</P>
+    <P Name="Outputs">1</P>
+  </Block>
+  <Block BlockType="S-Function" Name=" SFunction " SID="483::55">
+    <P Name="Tag">Stateflow S-Function 3</P>
+    <PortCounts in="5" out="5"/>
+    <P Name="Position">[180, 100, 230, 220]</P>
+    <P Name="ZOrder">39</P>
+    <P Name="FunctionName">sf_sfun</P>
+    <P Name="PortCounts">[5 5]</P>
+    <P Name="SFunctionDeploymentMode">off</P>
+    <P Name="EnableBusSupport">off</P>
+    <P Name="SFcnIsStateOwnerBlock">off</P>
+    <PortProperties>
+      <Port Type="out" Index="2">
+        <P Name="Name">PtoInjection</P>
+      </Port>
+      <Port Type="out" Index="3">
+        <P Name="Name">PfromExtraction</P>
+      </Port>
+      <Port Type="out" Index="4">
+        <P Name="Name">PSell</P>
+      </Port>
+      <Port Type="out" Index="5">
+        <P Name="Name">PBuy</P>
+      </Port>
+    </PortProperties>
+  </Block>
+  <Block BlockType="Terminator" Name=" Terminator " SID="483::57">
+    <P Name="Position">[460, 291, 480, 309]</P>
+    <P Name="ZOrder">41</P>
+  </Block>
+  <Block BlockType="Outport" Name="PtoInjection" SID="483::50">
+    <P Name="Position">[460, 101, 480, 119]</P>
+    <P Name="ZOrder">35</P>
+  </Block>
+  <Block BlockType="Outport" Name="PfromExtraction" SID="483::45">
+    <P Name="Position">[460, 136, 480, 154]</P>
+    <P Name="ZOrder">31</P>
+    <P Name="Port">2</P>
+  </Block>
+  <Block BlockType="Outport" Name="PSell" SID="483::30">
+    <P Name="Position">[460, 171, 480, 189]</P>
+    <P Name="ZOrder">21</P>
+    <P Name="Port">3</P>
+  </Block>
+  <Block BlockType="Outport" Name="PBuy" SID="483::42">
+    <P Name="Position">[460, 206, 480, 224]</P>
+    <P Name="ZOrder">28</P>
+    <P Name="Port">4</P>
+  </Block>
+  <Line>
+    <P Name="ZOrder">702</P>
+    <P Name="Src">483::31#out:1</P>
+    <P Name="Dst">483::55#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">703</P>
+    <P Name="Src">483::1#out:1</P>
+    <P Name="Dst">483::55#in:2</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">704</P>
+    <P Name="Src">483::25#out:1</P>
+    <P Name="Dst">483::55#in:3</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">705</P>
+    <P Name="Src">483::43#out:1</P>
+    <P Name="Dst">483::55#in:4</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">706</P>
+    <P Name="Src">483::44#out:1</P>
+    <P Name="Dst">483::55#in:5</P>
+  </Line>
+  <Line>
+    <P Name="Name">PtoInjection</P>
+    <P Name="ZOrder">707</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">483::55#out:2</P>
+    <P Name="Points">[0, -25]</P>
+    <P Name="Dst">483::50#in:1</P>
+  </Line>
+  <Line>
+    <P Name="Name">PfromExtraction</P>
+    <P Name="ZOrder">708</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">483::55#out:3</P>
+    <P Name="Dst">483::45#in:1</P>
+  </Line>
+  <Line>
+    <P Name="Name">PSell</P>
+    <P Name="ZOrder">709</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">483::55#out:4</P>
+    <P Name="Dst">483::30#in:1</P>
+  </Line>
+  <Line>
+    <P Name="Name">PBuy</P>
+    <P Name="ZOrder">710</P>
+    <P Name="Labels">[0, 0]</P>
+    <P Name="Src">483::55#out:5</P>
+    <P Name="Dst">483::42#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">711</P>
+    <P Name="Src">483::56#out:1</P>
+    <P Name="Dst">483::57#in:1</P>
+  </Line>
+  <Line>
+    <P Name="ZOrder">712</P>
+    <P Name="Src">483::55#out:1</P>
+    <P Name="Dst">483::56#in:1</P>
+  </Line>
+</System>
