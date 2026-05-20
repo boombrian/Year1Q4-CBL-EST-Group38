@@ -6,13 +6,13 @@
 timeUnit   = 's';
 
 supplyFile = "Team38_supply.csv";
-supplyUnit = "MW";   % CSV header says [MW] — was incorrectly set to kW!
+supplyUnit = "MW"; 
 
 % load the supply data
 Supply = loadSupplyData(supplyFile, timeUnit, supplyUnit);
 
 demandFile = "Team38_demand.csv";
-demandUnit = "MW";   % CSV header says [MW] — was incorrectly set to kW!
+demandUnit = "MW";  
 
 % load the demand data
 Demand = loadDemandData(demandFile, timeUnit, demandUnit);
@@ -38,14 +38,14 @@ eta_comp = 0.833;                                       % Compressor efficiency
 eta_exp  = 0.85;                                        % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST] Expander efficiency
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
 
-p_store_max = 80 * unit("bar");                         % Maximum storage pressure in cavern
-T_tes_max   = 373 * unit("K");                          % Maximum TES temperature (boiling point of water)
+p_store_max = 100 * unit("bar");                         % Maximum storage pressure in cavern
+T_tes       = 372 * unit("K");                            % Constant TES water temperature (99°C, just below boiling)
 
-% TES parameters
-% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
-U_tes = 2.0;                                            % Overall heat transfer coeff [W/(m^2·K)] (Typical for insulated tanks)
-A_tes = 2500 * unit("m^2");                             % TES surface area [m^2] (Assuming a large cylindrical tank)
-m_tes = 20000000 * unit("kg");                           % Mass of TES storage medium (water) [kg] (approx 20000 m^3)
+% TES parameters — Variable-mass, constant-temperature model
+% Water is stored at T_tes = 372 K (99°C). During charging, hot water is
+% added to the tank. During discharging, hot water is consumed and discarded.
+m_water_init = 0 * unit("kg");                           % Initial water mass in TES tank (empty at start)
+m_tes_max    = 300000 * unit("kg");                       % Maximum water storage capacity [kg]
 
 % Pipe / flow parameters
 % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
@@ -53,13 +53,12 @@ D_pipe = 0.5 * unit("m");                               % Pipe diameter [m]
 v_flow = 20 * unit("m")/unit("s");                      % Flow velocity [m/s]
 
 % Cavern parameter
-% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
-V_cavern = 5000000 * unit("m^3");                        % Cavern volume [m^3] (Based on Huntorf plant scale)
+V_cavern = 5000000 * unit("m^3");                        % Cavern volume [m^3] 
 
 %% Initial Conditions
 
-T_tes_initial    = T_amb;                               % Initial TES temperature [K]
-p_store_initial  = 40 * unit("bar");                    % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST] Initial cavern pressure [Pa] (40 bar is mid-range)
+m_water_initial  = m_water_init;                         % Initial water mass in TES [kg] (starts empty)
+p_store_initial  = 2 * unit("bar");                      % Initial cavern pressure (cushion gas)
 
 %% Derived Quantities (computed from above)
 
