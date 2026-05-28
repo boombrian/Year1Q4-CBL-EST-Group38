@@ -25,27 +25,29 @@ stopt  = min([Supply.Timeinfo.End, Demand.Timeinfo.End]);
 %% Physical Constants
 
 p_amb = 101325 * unit("Pa");                            % Atmospheric pressure
-T_amb = 300 * unit("K");                                % Ambient temperature
+T_amb = 297 * unit("K");                                % Ambient temperature
 R_air = 287.05 * unit("J") / (unit("kg") * unit("K"));  % Specific gas constant of air
 c_p   = 1005 * unit("J") / (unit("kg") * unit("K"));    % Specific heat capacity of air (const. pressure)
-c_tes = 4184 * unit("J") / (unit("kg") * unit("K"));    % Specific heat capacity of TES medium (water)
-n_poly = 1.1;                                           % Polytropic index (near-isothermal, 1.05-1.2)
+c_tes = 880 * unit("J") / (unit("kg") * unit("K"));     % Specific heat capacity of TES medium (salt/rock)
+n_poly = 1.14;                                           % Polytropic index (near-isothermal, 1.05-1.2)
 
 %% System Design Parameters
 
 eta_tran = 0.97;                                        % Transmission efficiency
 eta_comp = 0.833;                                       % Compressor efficiency
-eta_exp  = 0.85;                                        % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST] Expander efficiency
+eta_exp  = 0.82;                                        % Expander efficiency
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
 
 p_store_max = 100 * unit("bar");                         % Maximum storage pressure in cavern
-T_tes       = 372 * unit("K");                            % Constant TES water temperature (99°C, just below boiling)
 
-% TES parameters — Variable-mass, constant-temperature model
-% Water is stored at T_tes = 372 K (99°C). During charging, hot water is
-% added to the tank. During discharging, hot water is consumed and discarded.
-m_water_init = 0 * unit("kg");                           % Initial water mass in TES tank (empty at start)
-m_tes_max    = 300000 * unit("kg");                       % Maximum water storage capacity [kg]
+% TES parameters — variable-temperature salt bed model
+% Salt bed stores thermal energy as sensible heat. Mass is constant;
+% temperature rises during charging and falls during discharging.
+rho_tes    = 2160 * unit("kg") / unit("m^3");             % Density of salt bed [kg/m³]
+V_tes      = 50000 * unit("m^3");                           % TES tank volume (adjustable) [m³]
+m_tes      = rho_tes * V_tes;                             % TES bed mass [kg] (derived from volume)
+T_tes_max  = 773 * unit("K");                             % Max TES temperature (500°C, adjustable) [K]
+T_expand   = 373 * unit("K");                             % Expansion inlet air temperature [K]
 
 % Pipe / flow parameters
 % [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
@@ -57,8 +59,9 @@ V_cavern = 5000000 * unit("m^3");                        % Cavern volume [m^3]
 
 %% Initial Conditions
 
-m_water_initial  = m_water_init;                         % Initial water mass in TES [kg] (starts empty)
-p_store_initial  = 2 * unit("bar");                      % Initial cavern pressure (cushion gas)
+T_tes_initial    = T_amb;                                % Initial TES temperature [K] (starts at ambient)
+m_air_initial = (1.01 * unit("bar") * V_cavern) / (R_air * T_amb);  % Initial air mass [kg] (cushion gas at 2 bar)
+m_air_max     = (p_store_max * V_cavern) / (R_air * T_amb);      % Maximum air mass [kg] (at p_store_max)
 
 %% Derived Quantities (computed from above)
 
