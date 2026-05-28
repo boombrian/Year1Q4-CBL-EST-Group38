@@ -67,14 +67,14 @@ The polytropic index $n$ parameterises the heat exchange behaviour:
 |---|---|---|
 | Isothermal | $n = 1$ | Maximum heat exchange (temperature constant) |
 | Near-Isothermal | $1 < n < \gamma$ | Partial heat exchange |
-| Adiabatic (Isentropic) | $n = \gamma \approx 1.4$ | No heat exchange ($Q = 0$) |
+| Adiabatic (Isentropic) | $n = \gamma$ | No heat exchange ($Q = 0$) |
 | Isobaric | $n = 0$ | Constant pressure |
 | Isochoric | $n = \infty$ | Constant volume |
 
 For air modelled as an ideal diatomic gas:
-$$\gamma = \frac{c_p}{c_v} = \frac{c_p}{c_p - R_{air}} \approx \frac{1005}{1005 - 287.05} \approx 1.400$$
+$$\gamma = \frac{c_p}{c_v} = \frac{c_p}{c_p - R_{air}}$$
 
-The model uses $n_{poly} = 1.1$ for compression and for near-isothermal expansion (when TES water is available). This is achievable in practice through staged compression with intercooling or by injecting liquid water mist into the compression chamber. When TES water is exhausted, the expander falls back to adiabatic behaviour ($n = \gamma = 1.4$).
+The model uses a design polytropic index $n_{poly}$ for compression and for near-isothermal expansion (when TES water is available). This is achievable in practice through staged compression with intercooling or by injecting liquid water mist into the compression chamber. When TES water is exhausted, the expander falls back to adiabatic behaviour ($n = \gamma$).
 
 ### 2.2 Polytropic Process Theory
 
@@ -177,8 +177,10 @@ $$\text{if } p_{store} \geq p_{store,max}: \quad P_{sell} \mathrel{+}= P_{charge
 The required power from the expander is the magnitude of the deficit:
 $$P_{demand,req} = -P_{net} \quad \text{[W]}$$
 
-Cavern depletion guard — if the cavern pressure is at or below a 5% margin above ambient, the system cannot expand air and must buy from the grid:
-$$\text{if } p_{store} \leq 1.05 \cdot p_{amb}: \quad P_{buy} = P_{demand,req}, \quad P_{demand,req} = 0$$
+Cavern depletion guard — if the cavern pressure is at or below a specified safety margin above ambient, the system cannot expand air and must buy from the grid:
+$$\text{if } p_{store} \leq f_{margin} \cdot p_{amb}: \quad P_{buy} = P_{demand,req}, \quad P_{demand,req} = 0$$
+
+where $f_{margin}$ is the safety pressure margin factor.
 
 ---
 
@@ -190,10 +192,12 @@ $$\text{if } p_{store} \leq 1.05 \cdot p_{amb}: \quad P_{buy} = P_{demand,req}, 
 
 **Outputs:** $\dot{m}_{charge}$, $P_{thermal}$, $P_{exergy}$
 
-The compressor converts electrical power into compressed air mass flow. All processes use the polytropic index $n_{poly}$ (a fixed constant set in `preprocessing.m`).
+The compressor converts electrical power into compressed air mass flow. All processes use the polytropic index $n_{poly}$.
 
 **Step 1 — Pressure ratio:**
-$$r = \frac{p_{store}}{p_{amb}} \qquad [r \geq 1.001 \text{ (numerical guard)}]$$
+$$r = \frac{p_{store}}{p_{amb}} \qquad [r \geq r_{guard} \text{ (numerical guard)}]$$
+
+where $r_{guard}$ is a numerical floor factor just above unity.
 
 **Step 2 — Polytropic specific work factor [J/kg]:**
 
@@ -235,7 +239,7 @@ $$P_{exergy} = \dot{m}_{charge} \cdot R_{air} \cdot T_{amb} \cdot \ln(r) \quad \
 
 **Outputs:** $\dot{m}_{discharge}$, $\dot{Q}_{in,needed}$, $P_{output}$
 
-The expander implements a **dual-mode polytropic expansion** process. The polytropic index $n$ and the expansion inlet temperature $T_{in}$ are **not constants** — they depend dynamically on the availability of thermal energy in the TES tank.
+The expander implements a **dual-mode polytropic expansion** process. The polytropic index $n$ and the expansion inlet temperature $T_{in}$ are dynamically set depending on the availability of thermal energy in the TES tank.
 
 **Step 1 — Required shaft power (before transmission losses):**
 $$P_{discharge} = \frac{P_{demand,req}}{\eta_{tran}} \quad \text{[W]}$$
@@ -244,13 +248,13 @@ $$P_{discharge} = \frac{P_{demand,req}}{\eta_{tran}} \quad \text{[W]}$$
 $$r_{exp} = \frac{p_{amb}}{p_{store}} \qquad [r_{exp} < 1; \text{ return if } r_{exp} \geq 1]$$
 
 **Step 3 — Adiabatic index of air:**
-$$\gamma = \frac{c_p}{c_p - R_{air}} \approx 1.400$$
+$$\gamma = \frac{c_p}{c_p - R_{air}}$$
 
 **Step 4 — Dynamic mode selection based on TES state:**
 
 $$\begin{cases}
-n = n_{poly} = 1.1, \quad T_{in} = T_{tes} = 372\text{ K} & \text{if } m_{water} > 0 \quad \textbf{(Near-Isothermal Mode)} \\
-n = \gamma = 1.400, \quad T_{in} = T_{amb} = 300\text{ K} & \text{if } m_{water} = 0 \quad \textbf{(Adiabatic Fallback Mode)}
+n = n_{poly}, \quad T_{in} = T_{tes} & \text{if } m_{water} > 0 \quad \textbf{(Near-Isothermal Mode)} \\
+n = \gamma, \quad T_{in} = T_{amb} & \text{if } m_{water} = 0 \quad \textbf{(Adiabatic Fallback Mode)}
 \end{cases}$$
 
 **Step 5 — Polytropic expansion specific work [J/kg]:**
@@ -279,19 +283,15 @@ $$P_{output} = \eta_{tran} \cdot P_{discharge} \quad \text{[W]}$$
 
 **Implementation:** Simulink Integrator block fed by the algebraic output of the Compressor and Expander blocks.
 
-The cavern is modelled as a rigid volume $V_{cavern}$ containing an ideal gas at uniform conditions. From the ideal gas law $pV = mRT_{amb}$ (assuming the injected air reaches thermal equilibrium with the underground rock at $T_{amb}$), differentiating with respect to time:
-
-$$\frac{d}{dt}(pV) = \frac{d}{dt}(m R_{air} T_{amb})$$
-
-Since $V_{cavern}$, $R_{air}$, and $T_{amb}$ are constants:
+The cavern is modelled as a rigid volume $V_{cavern}$ containing an ideal gas at uniform conditions. Differentiating the ideal gas law with respect to time yields:
 
 $$\boxed{\frac{dp_{store}}{dt} = \frac{R_{air} \cdot T_{amb}}{V_{cavern}} \cdot (\dot{m}_{charge} - \dot{m}_{discharge})} \quad \text{[Pa/s]}$$
 
-**Initial condition:** $p_{store}(0) = p_{store,initial} = 2\text{ bar}$ (cushion gas pre-charge)
+**Initial condition:** $p_{store}(0) = p_{store,initial}$
 
 **Saturation:** $p_{store} \in [p_{amb},\ p_{store,max}]$
 
-The Simulink integrator clamps $p_{store}$ at the maximum safe operating pressure $p_{store,max}$ (100 bar by default). The controller also prevents charging when $p_{store} \geq p_{store,max}$.
+The Simulink integrator clamps $p_{store}$ at the maximum safe operating pressure $p_{store,max}$. The controller also prevents charging when $p_{store} \geq p_{store,max}$.
 
 ---
 
@@ -303,10 +303,10 @@ The Simulink integrator clamps $p_{store}$ at the maximum safe operating pressur
 
 **Output:** $\dot{m}_{water}$ [kg/s]
 
-The TES is modelled as a **variable-mass, constant-temperature** reservoir. Rather than tracking temperature in a fixed-mass tank, the model tracks the *mass* of hot water stored at a fixed temperature $T_{tes} = 372\text{ K}$ (99°C). This reflects a flow-through thermal store where hot water from the compressor intercoolers is added during charging and consumed through a heat exchanger during discharging.
+The TES is modelled as a **variable-mass, constant-temperature** reservoir. Rather than tracking temperature in a fixed-mass tank, the model tracks the *mass* of hot water stored at a fixed design temperature $T_{tes}$. This reflects a flow-through thermal store where hot water from the compressor intercoolers is added during charging and consumed through a heat exchanger during discharging.
 
 The thermal energy stored per unit mass of TES water relative to ambient is:
-$$\Delta h = c_{tes} \cdot (T_{tes} - T_{amb}) = 4184 \cdot (372 - 300) = 301{,}248 \text{ J/kg}$$
+$$\Delta h = c_{tes} \cdot (T_{tes} - T_{amb})$$
 
 The net power balance across the TES determines the rate of water mass change:
 
@@ -314,52 +314,52 @@ $$\boxed{\dot{m}_{water} = \frac{P_{thermal} - \dot{Q}_{in,needed}}{c_{tes} \cdo
 
 | Sign of $\dot{m}_{water}$ | Physical interpretation |
 |---|---|
-| $\dot{m}_{water} > 0$ | Hot water is being added (charging: compressor heat exceeds expander demand) |
-| $\dot{m}_{water} < 0$ | Hot water is being consumed (discharging: expander draws heat from tank) |
+| $\dot{m}_{water} > 0$ | Hot water is being added (charging) |
+| $\dot{m}_{water} < 0$ | Hot water is being consumed (discharging) |
 | $\dot{m}_{water} = 0$ | Thermal equilibrium or no active energy exchange |
 
-**Initial condition:** $m_{water}(0) = 0\text{ kg}$ (TES starts empty)
+**Initial condition:** $m_{water}(0) = m_{water,initial}$
 
 **Saturation:** $m_{water} \in [0,\ m_{tes,max}]$
 
-The Simulink integrator enforces lower saturation at 0 kg and upper saturation at $m_{tes,max} = 300{,}000\text{ kg}$.
+The Simulink integrator enforces lower saturation at 0 and upper saturation at $m_{tes,max}$.
 
 ---
 
 ## 5. Parameter Reference Table
 
-All parameters are set in `preprocessing.m` using the SI unit library in `scripts/constants.m`.
+All parameters are configured in `preprocessing.m` using the SI unit library in `scripts/constants.m`.
 
 ### Physical Constants
 
-| Parameter | Symbol | Value | Units | Description |
-|---|---|---|---|---|
-| `p_amb` | $p_{amb}$ | 101,325 | Pa | Atmospheric pressure |
-| `T_amb` | $T_{amb}$ | 300 | K | Ambient temperature |
-| `R_air` | $R_{air}$ | 287.05 | J/(kg·K) | Specific gas constant of air |
-| `c_p` | $c_p$ | 1,005 | J/(kg·K) | Specific heat of air at constant pressure |
-| `c_tes` | $c_{tes}$ | 4,184 | J/(kg·K) | Specific heat capacity of TES water |
-| `n_poly` | $n_{poly}$ | 1.1 | — | Polytropic index (compression; near-isothermal expansion) |
+| Parameter | Symbol | Units | Description |
+|---|---|---|---|
+| `p_amb` | $p_{amb}$ | Pa | Atmospheric pressure |
+| `T_amb` | $T_{amb}$ | K | Ambient temperature |
+| `R_air` | $R_{air}$ | J/(kg·K) | Specific gas constant of air |
+| `c_p` | $c_p$ | J/(kg·K) | Specific heat of air at constant pressure |
+| `c_tes` | $c_{tes}$ | J/(kg·K) | Specific heat capacity of TES water |
+| `n_poly` | $n_{poly}$ | — | Polytropic index (compression and near-isothermal expansion) |
 
 ### System Design Parameters
 
-| Parameter | Symbol | Value | Units | Description |
-|---|---|---|---|---|
-| `eta_tran` | $\eta_{tran}$ | 0.97 | — | Transmission/grid interface efficiency |
-| `eta_comp` | $\eta_{comp}$ | 0.833 | — | Compressor isentropic efficiency |
-| `eta_exp` | $\eta_{exp}$ | 0.85 | — | Expander isentropic efficiency |
-| `P_limit` | $P_{limit}$ | 300 | MW | Maximum compressor input power from grid |
-| `p_store_max` | $p_{store,max}$ | 100 | bar | Maximum safe cavern operating pressure |
-| `V_cavern` | $V_{cavern}$ | 5,000,000 | m³ | Volume of underground salt cavern |
-| `T_tes` | $T_{tes}$ | 372 | K | Operating temperature of TES water (99°C) |
-| `m_tes_max` | $m_{tes,max}$ | 300,000 | kg | Maximum water storage capacity of TES tank |
+| Parameter | Symbol | Units | Description |
+|---|---|---|---|
+| `eta_tran` | $\eta_{tran}$ | — | Transmission/grid interface efficiency |
+| `eta_comp` | $\eta_{comp}$ | — | Compressor isentropic efficiency |
+| `eta_exp` | $\eta_{exp}$ | — | Expander isentropic efficiency |
+| `P_limit` | $P_{limit}$ | W | Maximum compressor input power from grid |
+| `p_store_max` | $p_{store,max}$ | Pa | Maximum safe cavern operating pressure |
+| `V_cavern` | $V_{cavern}$ | m³ | Volume of underground salt cavern |
+| `T_tes` | $T_{tes}$ | K | Operating temperature of TES water |
+| `m_tes_max` | $m_{tes,max}$ | kg | Maximum water storage capacity of TES tank |
 
 ### Initial Conditions
 
-| Parameter | Symbol | Value | Units | Description |
-|---|---|---|---|---|
-| `p_store_initial` | $p_{store}(0)$ | 2 | bar | Initial cavern pressure (cushion gas) |
-| `m_water_initial` | $m_{water}(0)$ | 0 | kg | Initial TES water mass (empty at start) |
+| Parameter | Symbol | Units | Description |
+|---|---|---|---|
+| `p_store_initial` | $p_{store}(0)$ | Pa | Initial cavern pressure (cushion gas) |
+| `m_water_initial` | $m_{water}(0)$ | kg | Initial TES water mass |
 
 ---
 
