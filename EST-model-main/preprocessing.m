@@ -33,29 +33,23 @@ n_poly = 1.14;                                           % Polytropic index (nea
 
 %% System Design Parameters
 
+% ---- Design Configuration Selector ----
+% To switch design scenarios, change the number below to point to a
+% different file in the design_params/ folder (e.g. 'design_param2.m').
+design_params_file = fullfile('design_params', 'design_param1.m');
+run(design_params_file);  % Loads: p_store_max, V_cavern, V_tes, T_tes_max,
+                          %        T_expand, D_pipe, v_flow
+% ----------------------------------------
+
+% Fixed system efficiencies and limits (not design-variant)
 eta_tran = 0.97;                                        % Transmission efficiency
 eta_comp = 0.833;                                       % Compressor efficiency
 eta_exp  = 0.82;                                        % Expander efficiency
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
 
-p_store_max = 100 * unit("bar");                         % Maximum storage pressure in cavern
-
-% TES parameters — variable-temperature salt bed model
-% Salt bed stores thermal energy as sensible heat. Mass is constant;
-% temperature rises during charging and falls during discharging.
-rho_tes    = 2160 * unit("kg") / unit("m^3");             % Density of salt bed [kg/m³]
-V_tes      = 50000 * unit("m^3");                           % TES tank volume (adjustable) [m³]
-m_tes      = rho_tes * V_tes;                             % TES bed mass [kg] (derived from volume)
-T_tes_max  = 773 * unit("K");                             % Max TES temperature (500°C, adjustable) [K]
-T_expand   = 373 * unit("K");                             % Expansion inlet air temperature [K]
-
-% Pipe / flow parameters
-% [AI-GENERATED PLACEHOLDER FOR FEASIBILITY TEST]
-D_pipe = 0.5 * unit("m");                               % Pipe diameter [m]
-v_flow = 20 * unit("m")/unit("s");                      % Flow velocity [m/s]
-
-% Cavern parameter
-V_cavern = 5000000 * unit("m^3");                        % Cavern volume [m^3] 
+% TES derived quantity (depends on V_tes from design file)
+rho_tes = 2160 * unit("kg") / unit("m^3");               % Density of salt bed [kg/m³]
+m_tes   = rho_tes * V_tes;                              % TES bed mass [kg] (derived from V_tes)
 
 %% Initial Conditions
 

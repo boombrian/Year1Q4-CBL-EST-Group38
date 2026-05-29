@@ -1,5 +1,9 @@
 % Post-processing script for the EST Simulink model. This script is invoked
 % after the Simulink model is finished running (stopFcn callback function).
+
+% --- MUTED: Remove the line below to re-enable automatic post-processing ---
+return;
+% ---------------------------------------------------------------------------
 %
 % Plots for the I-CAES thermodynamic model:
 %   1) Supply & Demand
