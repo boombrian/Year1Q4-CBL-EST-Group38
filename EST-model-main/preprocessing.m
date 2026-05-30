@@ -41,8 +41,13 @@ run(design_params_file);  % Loads: p_store_max, V_cavern, V_tes, T_tes_max,
                           %        T_expand, D_pipe, v_flow
 % ----------------------------------------
 
+% Input cable parameters (Transport from supply)
+Cablevoltage = 345; %*unit('kV');  
+Rprime = 30; %*unit("mOhm/km");
+Cablelength = 100; %*unit("km");
+
 % Fixed system efficiencies and limits (not design-variant)
-eta_tran = 0.97;                                        % Transmission efficiency
+eta_tran = 0.97;
 eta_comp = 0.833;                                       % Compressor efficiency
 eta_exp  = 0.82;                                        % Expander efficiency
 P_limit  = 300 * unit("MW");                            % Maximum charging power draw from grid
