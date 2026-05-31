@@ -1,0 +1,13 @@
+# MATLAB/Simulink auto-generated files and caches
+slprj/
+*.slxc
+*.asv
+simulink_cache.xml
+
+# Temporary folders used for model analysis
+_temp_slx/
+EST-model-main/temp_unzip/
+
+# OS metadata
+.DS_Store
+Thumbs.db

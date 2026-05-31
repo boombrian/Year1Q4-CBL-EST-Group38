@@ -4,3 +4,5 @@
 *.slxc
 *.l
 simulink_cache.xml
+temp_unzip/
+slprj/

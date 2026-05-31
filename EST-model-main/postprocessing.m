@@ -1,5 +1,9 @@
 % Post-processing script for the EST Simulink model. This script is invoked
 % after the Simulink model is finished running (stopFcn callback function).
+
+% --- MUTED: Remove the line below to re-enable automatic post-processing ---
+return;
+% ---------------------------------------------------------------------------
 %
 % Plots for the I-CAES thermodynamic model:
 %   1) Supply & Demand
@@ -19,9 +23,22 @@ if isa(tout, 'timeseries'), tout = tout.Data; end
 if isa(PSupply, 'timeseries'), PSupply = PSupply.Data; end
 if isa(PDemand, 'timeseries'), PDemand = PDemand.Data; end
 if isa(p_store_out, 'timeseries'), p_store_out = p_store_out.Data; end
-if isa(m_water_out, 'timeseries'), m_water_out = m_water_out.Data; end
+if isa(T_tes_out, 'timeseries'), T_tes_out = T_tes_out.Data; end
 if isa(PSell, 'timeseries'), PSell = PSell.Data; end
 if isa(PBuy, 'timeseries'), PBuy = PBuy.Data; end
+
+% Mass-state formulation: m_air_out is the primary state variable.
+% Compute p_store_out from it if the user has not logged p_store separately.
+has_mass = exist('m_air_out','var');
+if has_mass
+    if isa(m_air_out, 'timeseries'), m_air_out = m_air_out.Data; end
+    if ~exist('p_store_out','var')
+        p_store_out = m_air_out * R_air * T_amb / V_cavern;
+    end
+end
+if exist('p_store_out','var') && isa(p_store_out, 'timeseries')
+    p_store_out = p_store_out.Data;
+end
 
 % These may not exist yet if the To Workspace blocks are missing
 has_flows = exist('mdot_charge_out','var') && exist('mdot_discharge_out','var');
@@ -59,14 +76,14 @@ title('Cavern Pressure');
 xlabel('Time [day]');
 ylabel('Pressure [bar]');
 
-% --- TES water mass ---
+% --- TES Temperature ---
 subplot(2,2,3);
-plot(tout/unit("day"), m_water_out/1000, 'Color', [0.85 0.33 0.1]);
+plot(tout/unit("day"), T_tes_out - 273.15, 'Color', [0.85 0.33 0.1]);
 xlim([0 tout(end)/unit("day")]);
 grid on;
-title('TES Water Mass');
+title('TES Temperature');
 xlabel('Time [day]');
-ylabel('Mass [tonnes]');
+ylabel('Temperature [°C]');
 
 % --- Load balancing ---
 subplot(2,2,4);
@@ -110,34 +127,57 @@ else
     warning('Mass flow / energy split variables not found in workspace. Skipping Figure 2.');
 end
 
-%% Figure 3 — Demand Energy Sources (Pie Chart)
-figure('Name','Demand Energy Sources','NumberTitle','off');
+%% Figure 3 — Energy Sources and Supply Distribution (Pie Charts)
+figure('Name','Energy Sources and Supply Distribution','NumberTitle','off');
 
 % Calculate powers to satisfy demand
 P_DirectSupply = min(PSupply, PDemand);
 P_Deficit = max(0, PDemand - PSupply);
 P_ICAES = max(0, P_Deficit - PBuy);
 
+% Calculate powers from supply
+P_Surplus = max(0, PSupply - PDemand);
+P_ToStorage = max(0, P_Surplus - PSell);
+
 % Calculate total energies (proportional to sum over time)
 E_DirectSupply = sum(P_DirectSupply);
 E_ICAES = sum(P_ICAES);
 E_Bought = sum(PBuy);
 
-% --- Pie Chart ---
-pie_data = [E_DirectSupply, E_ICAES, E_Bought];
-pie_labels = {'Direct Supply', 'ICAES Discharge', 'Bought from Grid'};
+E_ToStorage = sum(P_ToStorage);
+E_Sold = sum(PSell);
+
+% --- Left Pie Chart: Demand Energy Sources ---
+subplot(1, 2, 1);
+pie_data_demand = [E_DirectSupply, E_ICAES, E_Bought];
+pie_labels_demand = {'Direct Supply', 'ICAES Discharge', 'Bought from Grid'};
 % Remove zero entries from pie chart if any
-idx = pie_data > 0;
-if any(idx)
-    % Calculate percentages to append to labels
-    pct = pie_data(idx) / sum(pie_data(idx)) * 100;
-    active_labels = pie_labels(idx);
-    formatted_labels = arrayfun(@(i) sprintf('%s (%.1f%%)', active_labels{i}, pct(i)), 1:length(pct), 'UniformOutput', false);
-    pie(pie_data(idx), formatted_labels);
+idx_demand = pie_data_demand > 0;
+if any(idx_demand)
+    pct_demand = pie_data_demand(idx_demand) / sum(pie_data_demand(idx_demand)) * 100;
+    active_labels_demand = pie_labels_demand(idx_demand);
+    formatted_labels_demand = arrayfun(@(i) sprintf('%s (%.1f%%)', active_labels_demand{i}, pct_demand(i)), 1:length(pct_demand), 'UniformOutput', false);
+    pie(pie_data_demand(idx_demand), formatted_labels_demand);
 else
     pie([1], {'No Demand Data'});
 end
 title('Demand Energy Sources');
+
+% --- Right Pie Chart: Supply Energy Distribution ---
+subplot(1, 2, 2);
+pie_data_supply = [E_DirectSupply, E_ToStorage, E_Sold];
+pie_labels_supply = {'Direct to Demand', 'To Storage', 'Sold to Grid'};
+% Remove zero entries from pie chart if any
+idx_supply = pie_data_supply > 0;
+if any(idx_supply)
+    pct_supply = pie_data_supply(idx_supply) / sum(pie_data_supply(idx_supply)) * 100;
+    active_labels_supply = pie_labels_supply(idx_supply);
+    formatted_labels_supply = arrayfun(@(i) sprintf('%s (%.1f%%)', active_labels_supply{i}, pct_supply(i)), 1:length(pct_supply), 'UniformOutput', false);
+    pie(pie_data_supply(idx_supply), formatted_labels_supply);
+else
+    pie([1], {'No Supply Data'});
+end
+title('Supply Energy Distribution');
 
 %% Figure 4 — Deficit and Discharging Power Plot
 figure('Name','Deficit vs. Discharging Power','NumberTitle','off');

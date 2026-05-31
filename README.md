@@ -1,6 +1,6 @@
-# CBL Energy Storage (Y1Q4, Group 38)
+# CBL Energy Storage (TU Eindhoven, Y1Q4, Group 38)
 
-This repository contains the modeling, simulation, and experimental data acquisition codebase for the **CBL Energy Storage System** project at Eindhoven University of Technology (TU Eindhoven), Year 1, Quarter 4, developed by **Group 38**.
+This repository contains the modeling, simulation, and experimental data acquisition codebase for the **Challenge-Based Learning (CBL) Energy Storage** project at Eindhoven University of Technology (TU Eindhoven), Year 1, Quarter 4, developed by **Group 38**.
 
 The project focuses on the thermodynamic analysis, simulation, and experimental validation of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. It couples a physical pneumatic transient experiment (utilizing an Arduino-based sensor suite and MATLAB logging) with a high-fidelity, first-principles Simulink model to evaluate large-scale grid balancing and thermal energy integration.
 
@@ -42,12 +42,12 @@ A core component of the project is a pneumatic charging experiment used to valid
 
 ### 2.1 Sensor Interface (`pneumatic_data_collection.ino`)
 The Arduino reads voltages from two analog pressure sensors and an airflow sensor:
-- **Pressure Sensors (e.g., SMC PSE570-02)**: Configured with a voltage range of 1V–5V mapping linearly to 0–1 MPa.
-- **Airflow Sensor (e.g., SMC PF2A521-F03-1)**: Configured with a voltage range of 1V–5V mapping to 0–100 L/min.
-- **Safety Protocol**: Implements a software safety trip if pressure exceeds the maximum safe limit ($0.5\text{ MPa}$ / 5 bar) for longer than 2 seconds.
+- **Pressure Sensors (e.g., SMC PSE570-02)**: Calibrated to map the sensor output voltage range linearly to its operating pressure range.
+- **Airflow Sensor (e.g., SMC PF2A521-F03-1)**: Calibrated to map the sensor output voltage range linearly to its flow rate range.
+- **Safety Protocol**: Implements a software safety trip if pressure exceeds a specified maximum safe pressure limit ($P_{safe}$) for longer than the safety threshold duration ($t_{safe}$).
 
 ### 2.2 Real-time Logging (`data_collection.m`)
-An automated MATLAB script connects to the Arduino serial port (configured by default on `COM7` at 9600 baud), samples the data streaming from the microcontroller, and logs timestamps, voltages, and calculated pressure values into `pneumatic_data.txt`.
+An automated MATLAB script connects to the Arduino serial port (configured using the board's COM port and baud rate), samples the data streaming from the microcontroller, and logs timestamps, voltages, and calculated pressure values into `pneumatic_data.txt`.
 
 ### 2.3 Experimental Analysis (`post_processing.m`)
 The MATLAB analysis script loads multiple experimental runs, performs uniform temporal interpolation, calculates the statistical mean and standard deviation, and overlays the experimental curves with theoretical thermodynamic models:
@@ -62,7 +62,7 @@ The MATLAB analysis script loads multiple experimental runs, performs uniform te
 The main simulation is located in the `EST-model-main/` folder. It models:
 - **Salt Cavern Dynamics**: Integrating mass flows to determine pressure exergy.
 - **Thermal Energy Storage (TES)**: Modeling a variable-mass hot water reservoir that captures compressor intercooling heat to reheat air during expansion.
-- **Dual-Mode Expansion**: Operating near-isothermally ($n_{poly} = 1.1$) when hot water is available, and falling back to adiabatic expansion ($n = 1.4$) upon TES depletion.
+- **Dual-Mode Expansion**: Operating near-isothermally ($n_{poly}$) when hot water is available, and falling back to adiabatic expansion ($\gamma$) upon TES depletion.
 
 *For full physical and mathematical derivations of the I-CAES equations, see the detailed [EST-model-main/README.md](file:///D:/OneDrive%20-%20TU%20Eindhoven/Study/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/EST-model-main/README.md).*
 
@@ -73,7 +73,7 @@ The main simulation is located in the `EST-model-main/` folder. It models:
 To compile the firmware, run the serial logging, execute the simulations, and run the notebook, the following software environment is required:
 
 ### 4.1 MATLAB & Simulink Environment
-- **Version**: MATLAB R2025b or newer.
+- **Version**: MATLAB R2022a or newer (Note: Simulink models are saved as R2025a and R2025b formats).
 - **Required Toolboxes**:
   - Simulink
   - Stateflow (required for the MATLAB function blocks)
@@ -107,8 +107,8 @@ To compile the firmware, run the serial logging, execute the simulations, and ru
 1. Open `pneumatic_data_collection.ino` in the Arduino IDE.
 2. Connect the Arduino board to your computer and select the correct port and board type. Click **Upload**.
 3. Close the Arduino Serial Monitor.
-4. Open MATLAB and open `data_collection.m`. Modify line 5 (`portName = "COM7"`) to match the actual serial port allocated to your Arduino.
-5. Run `data_collection.m` in MATLAB to start the 5-second automatic data logging sequence.
+4. Open MATLAB and open `data_collection.m`. Modify line 5 (`portName = "COMx"`) to match the actual serial port allocated to your Arduino.
+5. Run `data_collection.m` in MATLAB to start the automatic data logging sequence.
 6. Open and run `post_processing.m` to load `pneumatic_data.txt` and generate comparative plots of experimental data vs. theory.
 
 ### 5.3 Running the Python Data Analysis Notebook
