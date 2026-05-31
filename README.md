@@ -73,7 +73,7 @@ The main simulation is located in the `EST-model-main/` folder. It models:
 To compile the firmware, run the serial logging, execute the simulations, and run the notebook, the following software environment is required:
 
 ### 4.1 MATLAB & Simulink Environment
-- **Version**: MATLAB R2022b or newer (Note: Simulink models are saved as R2025a and R2025b formats).
+- **Version**: MATLAB R2022a or newer (Note: Simulink models are saved as R2025a and R2025b formats).
 - **Required Toolboxes**:
   - Simulink
   - Stateflow (required for the MATLAB function blocks)

@@ -151,7 +151,7 @@ $$[\text{Supply, Demand}] \xrightarrow{\text{Transport}} \xrightarrow{\text{Cont
 
 **MATLAB Function:** `controller`
 
-**Inputs:** $P_{supply}$, $P_{demand}$, $p_{store}$, $P_{limit}$, $p_{store,max}$, $p_{amb}$
+**Inputs:** $P_{supply}$, $P_{demand}$, $p_{store}$, $\eta_{tran}$, $P_{limit}$, $p_{store,max}$, $p_{amb}$
 
 **Outputs:** $P_{charge}$, $P_{demand,req}$, $P_{sell}$, $P_{buy}$
 
@@ -163,8 +163,8 @@ $$P_{net} = P_{supply} - P_{demand} \quad \text{[W]}$$
 The available surplus is capped by the maximum compressor input power:
 $$P_{available} = \min(P_{net},\ P_{limit}) \quad \text{[W]}$$
 
-Transmission losses are handled externally by the Transport blocks:
-$$P_{charge} = P_{available} \quad \text{[W]}$$
+Transmission losses are applied before delivering power to the compressor:
+$$P_{charge} = \eta_{tran} \cdot P_{available} \quad \text{[W]}$$
 
 Surplus beyond the power limit is sold to the grid:
 $$P_{sell} = P_{net} - P_{available} \quad \text{[W]}$$
