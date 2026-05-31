@@ -42,9 +42,9 @@ run(design_params_file);  % Loads: p_store_max, V_cavern, V_tes, T_tes_max,
 % ----------------------------------------
 
 % Input cable parameters (Transport from supply)
-Cablevoltage = 345; %*unit('kV');  
-Rprime = 30; %*unit("mOhm/km");
-Cablelength = 100; %*unit("km");
+Cablevoltage = 345 * 1000;          % 345,000 V
+Rprime       = (30 * 1e-3) / 1000;  % 0.00003 Ohm/meter
+Cablelength  = 100 * 1000;          % 100,000 meters
 
 % Fixed system efficiencies and limits (not design-variant)
 eta_tran = 0.97;
