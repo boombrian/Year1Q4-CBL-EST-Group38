@@ -1,7 +1,6 @@
 // Pin definitions based on wiring 
 const int P2_PIN = A0; // Pressure sensor 2 [cite: 1, 2]
 const int Q_PIN  = A1; // Air flow sensor [cite: 2, 3]   
-const int P1_PIN = A2; // Pressure sensor 1 [cite: 3, 4] 
 
 // Constants for ADC conversion
 const float VREF = 5.0;
@@ -19,7 +18,7 @@ void setup() {
   Serial.begin(9600);
   
   // CSV file header (Updated column names to reflect 'bar')
-  Serial.println("time_s,V_P1,V_P2,V_Q,P1_bar,P2_bar,Q_L_min");
+  Serial.println("time_s,V_P2,V_Q,P2_bar,Q_L_min");
 }
 
 // Conversion of raw ADC to voltage
@@ -49,18 +48,16 @@ void loop() {
   float time_s = millis() / 1000.0;
 
   // Read voltages
-  float V_P1 = readVoltage(P1_PIN);
   float V_P2 = readVoltage(P2_PIN);
   float V_Q  = readVoltage(Q_PIN);
 
   // Convert to engineering units (Updated to Bar)
-  float P1_bar = pressureBar(V_P1);
   float P2_bar = pressureBar(V_P2);
   float Q_L_min = flowLmin(V_Q); 
 
   // === SOFTWARE SAFETY CHECK ===
-  // Check if either pressure sensor exceeds the maximum safe limit (now in bar)
-  if (P1_bar > MAX_SAFE_PRESSURE || P2_bar > MAX_SAFE_PRESSURE) { 
+  // Check if pressure sensor exceeds the maximum safe limit (now in bar)
+  if (P2_bar > MAX_SAFE_PRESSURE) { 
     if (overpressureStartTime == 0) {
       overpressureStartTime = millis(); // Start timing the spike [cite: 17, 18]
     }
@@ -77,15 +74,11 @@ void loop() {
   Serial.print(time_s, 3); 
   Serial.print(",");
   
-  Serial.print(V_P1, 3);
-  Serial.print(",");
   Serial.print(V_P2, 3);
   Serial.print(",");
   Serial.print(V_Q, 3);
   Serial.print(",");
   
-  Serial.print(P1_bar, 4);
-  Serial.print(",");
   Serial.print(P2_bar, 4);
   Serial.print(",");
   Serial.println(Q_L_min, 2);

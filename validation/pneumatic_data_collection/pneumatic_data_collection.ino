@@ -1,7 +1,7 @@
 // Pin definitions based on wiring 
+// [CHANGED] Removed P1_PIN (A2) — pressure sensor 1 no longer used
 const int P2_PIN = A0; // Pressure sensor 2 
 const int Q_PIN  = A1; // Air flow sensor    
-const int P1_PIN = A2; // Pressure sensor 1 
 
 // Constants for ADC conversion
 const float VREF = 5.0;
@@ -16,9 +16,8 @@ bool safetyTripped = false;
 
 void setup() {
   Serial.begin(9600);
-  
-  // CSV file header
-  Serial.println("time_s,V_P1,V_P2,V_Q,P1_MPa,P2_MPa,Q_L_min");
+  // [CHANGED] No CSV header printed — using label:value format instead.
+  // The Serial Plotter reads label:value pairs to show custom legend names.
 }
 
 // Conversion of raw ADC to voltage
@@ -43,22 +42,20 @@ float flowLmin(float voltage) {
 }
 
 void loop() {
-  // Timestamp
+  // Timestamp (not sent to serial — plotter handles X-axis, MATLAB uses its own timer)
   float time_s = millis() / 1000.0;
 
   // Read voltages
-  float V_P1 = readVoltage(P1_PIN);
   float V_P2 = readVoltage(P2_PIN);
   float V_Q  = readVoltage(Q_PIN);
 
   // Convert to engineering units
-  float P1_MPa = pressureMPa(V_P1);
   float P2_MPa = pressureMPa(V_P2);
   float Q_L_min = flowLmin(V_Q);
 
 // === SOFTWARE SAFETY CHECK ===
-  // Check if either pressure sensor exceeds the maximum safe limit
-  if (P1_MPa > MAX_SAFE_PRESSURE || P2_MPa > MAX_SAFE_PRESSURE) {
+  // [CHANGED] Safety check now only monitors P2 — P1 sensor removed
+  if (P2_MPa > MAX_SAFE_PRESSURE) {
     if (overpressureStartTime == 0) {
       overpressureStartTime = millis(); // Start timing the spike
     }
@@ -71,29 +68,24 @@ void loop() {
     overpressureStartTime = 0; // Reset timer if pressure drops back to normal
   }
 
-  // Output in CSV format
-  Serial.print(time_s, 3);
-  Serial.print(",");
-  
-  Serial.print(V_P1, 3);
-  Serial.print(",");
+  // [CHANGED] Output in label:value format for Serial Plotter custom names
+  // Format: "V_P2:x.xxx,V_Q:x.xxx,P2_MPa:x.xxxx,Q_Lmin:xx.xx,Safety:0or1"
+  // Safety encoded as numeric: 0 = NORMAL, 1 = CRITICAL_OVERPRESSURE
+  // time_s omitted — its ever-increasing value would dominate the Y-axis scale
+  Serial.print("V_P2:");
   Serial.print(V_P2, 3);
   Serial.print(",");
+  Serial.print("V_Q:");
   Serial.print(V_Q, 3);
   Serial.print(",");
-  
-  Serial.print(P1_MPa, 4);
-  Serial.print(",");
+  Serial.print("P2_MPa:");
   Serial.print(P2_MPa, 4);
   Serial.print(",");
-  Serial.println(Q_L_min, 2);
-
-// Append safety status string so MATLAB can read it
-  if (safetyTripped) {
-    Serial.println("CRITICAL_OVERPRESSURE");
-  } else {
-    Serial.println("NORMAL");
-  }
+  Serial.print("Q_Lmin:");
+  Serial.print(Q_L_min, 2);
+  Serial.print(",");
+  Serial.print("Safety:");
+  Serial.println(safetyTripped ? 1 : 0);
   
-  delay(10); // 1Hz sample frequency
+  delay(10); // [FIXED] ~100Hz sample rate (delay is 10ms, not 1s)
 }
