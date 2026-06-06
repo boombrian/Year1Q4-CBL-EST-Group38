@@ -1,8 +1,8 @@
 # Near-Isothermal Compressed Air Energy Storage (I-CAES) Model
 
-This folder (`EST-model-main/`) is a component of the project repository containing the high-fidelity, first-principles Simulink/MATLAB model of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. The model simulates the coupled thermodynamic behaviour of an underground salt cavern (exergy storage) and a surface-level Thermal Energy Storage (TES) tank operating in conjunction with the electrical grid over an annual time horizon.
+This folder (`EST-model-main/`) contains the high-fidelity, first-principles Simulink/MATLAB model of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. The model simulates the coupled thermodynamic behaviour of an underground salt cavern (pressure/exergy storage) and a surface-level Thermal Energy Storage (TES) salt-bed tank, operating in conjunction with the electrical grid over an annual time horizon.
 
-The simulation is built from four coupled MATLAB Function blocks (implemented as Stateflow EML charts) that faithfully encode the governing physics at each timestep. All parameters are SI-unit consistent and parameterised in `preprocessing.m`.
+The simulation is built from five coupled MATLAB Function blocks (implemented as Stateflow EML charts) that encode the governing physics at each fixed timestep. All parameters are SI-unit consistent and fully parameterised in `preprocessing.m` and the `design_params/` configuration files.
 
 ---
 
@@ -19,9 +19,10 @@ The simulation is built from four coupled MATLAB Function blocks (implemented as
 4. [Mathematical Model: Full Equation Reference](#4-mathematical-model-full-equation-reference)
    - 4.1 [Controller Block](#41-controller-block)
    - 4.2 [Compressor Block (Injection System)](#42-compressor-block-injection-system)
-   - 4.3 [Expander Block (Extraction System) — Dual-Mode](#43-expander-block-extraction-system--dual-mode)
-   - 4.4 [Cavern Pressure Dynamics](#44-cavern-pressure-dynamics)
+   - 4.3 [Expander Block (Extraction System)](#43-expander-block-extraction-system--dual-mode)
+   - 4.4 [Cavern Pressure Dynamics](#44-cavern-dynamics-mass-state-formulation)
    - 4.5 [TES Dynamics Block](#45-tes-dynamics-block)
+   - 4.6 [Transport Blocks](#46-transport-blocks)
 5. [Parameter Reference Table](#5-parameter-reference-table)
 6. [Folder Structure](#6-folder-structure)
 7. [Getting Started](#7-getting-started)
@@ -47,8 +48,8 @@ A standard adiabatic CAES system suffers a fundamental thermodynamic limitation:
 **Near-Isothermal CAES** addresses this by explicitly capturing and storing the heat of compression in a Thermal Energy Storage (TES) system and re-injecting it during expansion. This approach:
 
 - **Decouples** the stored energy into two independent streams: pressure exergy (cavern) and thermal energy (TES).
-- **Avoids Carnot limits**: Unlike a heat engine, the process does not pass through a high-temperature cycle, circumventing the fundamental efficiency ceiling imposed by $\eta_{Carnot} = 1 - T_{cold}/T_{hot}$.
-- **Sustains expansion temperatures**: By re-heating the air from the TES, the expansion process is sustained at near-constant temperature, maintaining pressure and power output throughout the discharge cycle.
+- **Avoids Carnot limits**: Unlike a heat engine, the process does not pass through a high-temperature cycle.
+- **Sustains expansion temperatures**: By re-heating the air from the TES, the expansion process is sustained at near-constant temperature.
 - **Prevents cryogenic damage**: Without TES heat input, the expander outlet temperature would fall to cryogenic levels.
 
 ---
@@ -68,13 +69,11 @@ The polytropic index $n$ parameterises the heat exchange behaviour:
 | Isothermal | $n = 1$ | Maximum heat exchange (temperature constant) |
 | Near-Isothermal | $1 < n < \gamma$ | Partial heat exchange |
 | Adiabatic (Isentropic) | $n = \gamma$ | No heat exchange ($Q = 0$) |
-| Isobaric | $n = 0$ | Constant pressure |
-| Isochoric | $n = \infty$ | Constant volume |
 
 For air modelled as an ideal diatomic gas:
 $$\gamma = \frac{c_p}{c_v} = \frac{c_p}{c_p - R_{air}}$$
 
-The model uses a design polytropic index $n_{poly}$ for compression and for near-isothermal expansion (when TES water is available). This is achievable in practice through staged compression with intercooling or by injecting liquid water mist into the compression chamber. When TES water is exhausted, the expander falls back to adiabatic behaviour ($n = \gamma$).
+The model uses a design polytropic index $n_{poly} = 1.14$ for compression and near-isothermal expansion (when TES is available). When TES thermal energy is exhausted, the expander falls back to adiabatic behaviour ($n = \gamma$).
 
 ### 2.2 Polytropic Process Theory
 
@@ -82,31 +81,25 @@ For a polytropic process between states 1 and 2, the temperature ratio is:
 
 $$\frac{T_2}{T_1} = \left(\frac{p_2}{p_1}\right)^{\frac{n-1}{n}}$$
 
-The specific work input (or output) for a steady-flow process (shaft work per unit mass) is derived from the steady-flow energy equation (SFEE):
+The specific work input (or output) for a steady-flow process is derived from the Steady-Flow Energy Equation (SFEE):
 
 $$w_{poly} = \frac{n}{n-1} R_{air} T_1 \left[ \left(\frac{p_2}{p_1}\right)^{\frac{n-1}{n}} - 1 \right] \quad \text{[J/kg]}$$
 
-This reduces correctly to the isothermal specific work $w_{iso} = R_{air} T \ln(p_2/p_1)$ in the limit $n \to 1$.
-
 ### 2.3 Exergy Analysis
 
-**Exergy** is the maximum useful work extractable from a system as it moves reversibly to thermodynamic equilibrium with its environment (defined by $T_{amb}$, $p_{amb}$). For an ideal gas at pressure $p_{store}$ and temperature $T_{amb}$ (thermal equilibrium with environment), the specific mechanical exergy is:
+**Exergy** is the maximum useful work extractable from a system as it moves reversibly to thermodynamic equilibrium with its environment ($T_{amb}$, $p_{amb}$). For an ideal gas at pressure $p_{store}$ and temperature $T_{amb}$, the specific mechanical exergy is:
 
 $$e_{mech} = R_{air} T_{amb} \ln\left(\frac{p_{store}}{p_{amb}}\right) \quad \text{[J/kg]}$$
 
-The rate of exergy stored in the cavern during compression is therefore:
+The rate of exergy stored in the cavern during compression is:
 
 $$\dot{E}_{exergy} = \dot{m}_{charge} \cdot R_{air} \cdot T_{amb} \cdot \ln\left(\frac{p_{store}}{p_{amb}}\right) \quad \text{[W]}$$
-
-This equation is implemented directly in the Compressor block.
 
 ---
 
 ## 3. Model Architecture
 
 ### 3.1 Simulink Block Diagram Structure
-
-The Simulink model is organised into five hierarchical subsystems, each containing one or more MATLAB Function blocks:
 
 ```
 ICAES (Root)
@@ -115,19 +108,23 @@ ICAES (Root)
 │
 ├── Injection System/
 │   └── Compressor/              → EML: compressor
-│         Polytropic compression; outputs mdot_charge, P_thermal, P_exergy.
+│         Polytropic compression; outputs mdot_charge (capped at mdot_max),
+│         P_thermal, P_exergy.
 │
 ├── Extraction System/
 │   └── Expander/                → EML: expander
-│         Dual-mode polytropic expansion; outputs mdot_discharge, Q_in_needed, P_output.
+│         Dual-mode polytropic expansion; outputs mdot_discharge (capped at
+│         mdot_max), Q_in_needed, P_output.
 │
 ├── Cavern (Pressure Storage)/   → Simulink Integrator block
-│     Integrates dp/dt = (R_air * T_amb / V_cavern) * (mdot_charge - mdot_discharge)
+│     Integrates dm_air/dt = mdot_charge - mdot_discharge.
+│     EoS block converts m_air → p_store.
 │
 └── TES/
     └── MATLAB Function/         → EML: tes_dynamics
-          Fixed-mass salt bed; outputs dT_tes/dt.
-          Integrated by a Simulink Integrator block with saturation [T_amb, T_tes_max].
+          Fixed-mass salt bed with passive thermal decay.
+          Outputs dT_tes/dt and P_thermal_loss (monitorable via Scope).
+          Integrated by a Simulink Integrator with saturation [T_amb, T_tes_max].
 ```
 
 ### 3.2 Signal Flow and State Variables
@@ -137,11 +134,11 @@ The model has **two continuous state variables** integrated by Simulink integrat
 | State Variable | Symbol | Units | Description |
 |---|---|---|---|
 | Cavern Air Mass | $m_{air}$ | kg | Total mass of air stored in the cavern |
-| TES Temperature | $T_{tes}$ | K | Current average temperature of the salt bed TES |
+| TES Temperature | $T_{tes}$ | K | Current average temperature of the salt bed |
 
-All other quantities (mass flow rates, power flows, temperatures) are algebraic functions computed at each timestep from the states and inputs. Signal flow proceeds in this order each timestep:
+Signal flow each timestep:
 
-$$[\text{Supply, Demand}] \xrightarrow{\text{Transport}} \xrightarrow{\text{Controller}} [P_{charge}, P_{demand,req}] \xrightarrow{\text{Compressor / Expander}} [\dot{m}_{charge}, P_{thermal}, \dot{m}_{discharge}, \dot{Q}_{in}] \xrightarrow{\text{Integrators}} [m_{air}, T_{tes}] \xrightarrow{\text{EoS}} [p_{store}]$$
+$$[\text{Supply, Demand}] \xrightarrow{\text{Controller}} [P_{charge}, P_{demand,req}] \xrightarrow{\text{Compressor / Expander}} [\dot{m}_{charge}, P_{thermal}, \dot{m}_{discharge}, \dot{Q}_{in}] \xrightarrow{\text{Integrators}} [m_{air}, T_{tes}] \xrightarrow{\text{EoS}} [p_{store}]$$
 
 ---
 
@@ -151,36 +148,26 @@ $$[\text{Supply, Demand}] \xrightarrow{\text{Transport}} \xrightarrow{\text{Cont
 
 **MATLAB Function:** `controller`
 
-**Inputs:** $P_{supply}$, $P_{demand}$, $p_{store}$, $\eta_{tran}$, $P_{limit}$, $p_{store,max}$, $p_{amb}$
+**Inputs:** $P_{supply}$, $P_{demand}$, $p_{store}$, $P_{limit}$, $p_{store,max}$, $p_{amb}$
 
 **Outputs:** $P_{charge}$, $P_{demand,req}$, $P_{sell}$, $P_{buy}$
 
-**Step 1 — Compute net grid power:**
-$$P_{net} = P_{supply} - P_{demand} \quad \text{[W]}$$
-
 **Case A — Surplus: $P_{net} \geq 0$ (Charging Mode)**
 
-The available surplus is capped by the maximum compressor input power:
-$$P_{available} = \min(P_{net},\ P_{limit}) \quad \text{[W]}$$
+$$P_{net} = P_{supply} - P_{demand}$$
+$$P_{available} = \min(P_{net},\ P_{limit})$$
+$$P_{charge} = P_{available}$$
+$$P_{sell} = P_{net} - P_{available}$$
 
-Transmission losses are applied before delivering power to the compressor:
-$$P_{charge} = \eta_{tran} \cdot P_{available} \quad \text{[W]}$$
-
-Surplus beyond the power limit is sold to the grid:
-$$P_{sell} = P_{net} - P_{available} \quad \text{[W]}$$
-
-Cavern saturation guard — if the cavern is at maximum pressure, all compressor power is redirected to selling:
-$$\text{if } p_{store} \geq p_{store,max}: \quad P_{sell} \mathrel{+}= P_{charge}, \quad P_{charge} = 0$$
+Cavern saturation guard — if $p_{store} \geq p_{store,max}$: all compressor power redirected to selling.
 
 **Case B — Deficit: $P_{net} < 0$ (Discharging Mode)**
 
-The required power from the expander is the magnitude of the deficit:
-$$P_{demand,req} = -P_{net} \quad \text{[W]}$$
+$$P_{demand,req} = -P_{net}$$
 
-Cavern depletion guard — if the cavern pressure is at or below a specified safety margin above ambient, the system cannot expand air and must buy from the grid:
-$$\text{if } p_{store} \leq f_{margin} \cdot p_{amb}: \quad P_{buy} = P_{demand,req}, \quad P_{demand,req} = 0$$
+Cavern depletion guard — if $p_{store} \leq 1.05 \cdot p_{amb}$: system buys from grid instead.
 
-where $f_{margin}$ is the safety pressure margin factor.
+> **Note:** Transmission efficiency $\eta_{tran}$ is applied by dedicated Transport Gain blocks on the root canvas, not inside the controller.
 
 ---
 
@@ -188,60 +175,43 @@ where $f_{margin}$ is the safety pressure margin factor.
 
 **MATLAB Function:** `compressor`
 
-**Inputs:** $P_{charge}$, $p_{store}$, $\eta_{comp}$, $n_{poly}$, $R_{air}$, $c_p$, $T_{amb}$, $p_{amb}$
+**Inputs:** $P_{charge}$, $p_{store}$
+
+**Parameters:** $\eta_{comp}$, $n_{poly}$, $R_{air}$, $c_p$, $T_{amb}$, $p_{amb}$, $\dot{m}_{max}$
 
 **Outputs:** $\dot{m}_{charge}$, $P_{thermal}$, $P_{exergy}$
 
-#### Real-World Compressor Architecture
+#### Multi-Stage Compression — Model Simplification
 
-In practical large-scale Compressed Air Energy Storage plants, the compression from atmospheric pressure to cavern storage pressure (which can exceed 70–100 bar) is never performed in a single step. Real systems use a **multi-stage compression train**: a sequence of individual compressor stages, each handling a portion of the total pressure rise, connected by **intercoolers** between stages. After each stage, the hot compressed air is cooled back towards ambient temperature before entering the next stage. In near-isothermal CAES designs, this intercooling heat is not wasted — it is captured by heat exchangers and transferred into a Thermal Energy Storage (TES) system for later use during discharge.
-
-This multi-stage approach is used for two fundamental reasons. First, compressing gas in smaller pressure steps with cooling in between requires significantly less total shaft work than compressing the same gas from start to finish in one step. Second, limiting the temperature rise inside each stage protects the mechanical components and reduces thermal stress. In practice, large I-CAES systems at the 100–300 MW scale would typically employ three to five compression stages with dedicated intercoolers and TES heat exchangers between each one.
-
-#### Model Simplification and Justification
-
-Modelling each compression stage individually would require specifying the pressure ratio, inlet temperature, efficiency, and heat exchanger effectiveness for every stage — a level of detail that introduces many uncertain parameters without meaningfully changing the annual energy balance results at the system scale.
-
-This model therefore represents the entire multi-stage compression train as a **single equivalent polytropic process**. This simplification is thermodynamically justified because the net effect of multi-stage compression with intercooling is precisely what a polytropic index lower than the adiabatic index represents: a compression process that exchanges heat with its surroundings along the way. By choosing a polytropic index $n_{poly}$ between 1 (isothermal) and $\gamma \approx 1.4$ (adiabatic), the model directly captures the degree of heat exchange achieved by the intercooling system, without needing to resolve the internal stage-by-stage details. A value of $n_{poly} = 1.1$, as used in this model, is consistent with a well-designed multi-stage compression train operating close to isothermal conditions.
-
-This approach is standard practice in system-level energy storage models and has been validated against more detailed multi-stage models in the literature. It allows the simulation to correctly predict mass flow rates, compressor outlet temperatures, thermal power delivered to the TES, and annual energy balances, while keeping the model tractable and the parameter set well-defined.
-
-The compressor converts electrical power into compressed air mass flow. All processes use the polytropic index $n_{poly}$.
+In practice, compression from atmospheric to cavern pressure (70–100 bar) uses a **multi-stage train with intercoolers**. This model represents the entire train as a **single equivalent polytropic process** with index $n_{poly}$. This is thermodynamically justified: multi-stage intercooled compression is precisely what a polytropic index between 1 (isothermal) and $\gamma$ (adiabatic) represents. $n_{poly} = 1.14$ is consistent with well-designed intercooled compression.
 
 **Step 1 — Pressure ratio:**
-$$r = \frac{p_{store}}{p_{amb}} \qquad [r \geq r_{guard} \text{ (numerical guard)}]$$
+$$r = \frac{p_{store}}{p_{amb}} \qquad [r \geq 1.001 \text{ guard}]$$
 
-where $r_{guard}$ is a numerical floor factor just above unity.
+**Step 2 — Polytropic specific work [J/kg]:**
+$$w_{comp} = \frac{n_{poly}}{n_{poly}-1} \cdot R_{air} \cdot T_{amb} \cdot \left( r^{\frac{n_{poly}-1}{n_{poly}}} - 1 \right)$$
 
-**Step 2 — Polytropic specific work factor [J/kg]:**
+**Step 3 — Thermodynamic mass flow rate [kg/s]:**
+$$\dot{m}_{thermo} = \frac{P_{charge}}{\eta_{comp} \cdot w_{comp}}$$
 
-This is the theoretical shaft work required to compress 1 kg of air from $p_{amb}$ to $p_{store}$ polytropically:
-$$w_{comp} = \frac{n_{poly}}{n_{poly}-1} \cdot R_{air} \cdot T_{amb} \cdot \left( r^{\frac{n_{poly}-1}{n_{poly}}} - 1 \right) \quad \text{[J/kg]}$$
+**Step 4 — Pipe flow limit [kg/s]:**
 
-**Step 3 — Mass flow rate [kg/s]:**
+The mass flow is physically limited by the injection pipe capacity:
+$$\dot{m}_{charge} = \min\!\left(\dot{m}_{thermo},\ \dot{m}_{max}\right)$$
 
-Applying compressor isentropic efficiency $\eta_{comp}$:
-$$\dot{m}_{charge} = \frac{P_{charge}}{\eta_{comp} \cdot w_{comp}} \quad \text{[kg/s]}$$
+where $\dot{m}_{max} = \rho_{amb} \cdot A_{pipe} \cdot v_{flow}$ is derived from pipe geometry in `preprocessing.m`.
 
-**Step 4 — Compressor outlet temperature [K]:**
+When the pipe is the bottleneck, the actual electrical power consumed is:
+$$P_{used} = \dot{m}_{charge} \cdot \eta_{comp} \cdot w_{comp} \leq P_{charge}$$
 
-From the polytropic temperature-pressure relation:
-$$T_{out} = T_{amb} \cdot r^{\frac{n_{poly}-1}{n_{poly}}} \quad \text{[K]}$$
+**Step 5 — Compressor outlet temperature [K]:**
+$$T_{out} = T_{amb} \cdot r^{\frac{n_{poly}-1}{n_{poly}}}$$
 
-**Step 5 — Thermal power captured by TES [W]:**
+**Step 6 — Thermal power to TES [W]:**
+$$P_{thermal} = P_{used} - \dot{m}_{charge} \cdot c_p \cdot (T_{out} - T_{amb}) \quad [\geq 0]$$
 
-The difference between total electrical input and the specific enthalpy rise of the compressed air (Steady-Flow Energy Equation):
-$$P_{thermal} = P_{charge} - \dot{m}_{charge} \cdot c_p \cdot (T_{out} - T_{amb}) \quad \text{[W]}$$
-$$P_{thermal} = \max(P_{thermal},\ 0) \quad \text{(non-negativity guard)}$$
-
-This power represents the heat of compression that is captured and transferred to the TES water tank, heating water from $T_{amb}$ to $T_{tes}$.
-
-**Step 6 — Pressure exergy rate stored in cavern [W]:**
-
-From mechanical exergy theory (see §2.3):
-$$P_{exergy} = \dot{m}_{charge} \cdot R_{air} \cdot T_{amb} \cdot \ln(r) \quad \text{[W]}$$
-
-> **Note:** $P_{thermal}$ and $P_{exergy}$ are output signals for monitoring and post-processing. The actual state updates use $\dot{m}_{charge}$ (for cavern pressure) and $P_{thermal}$ (for TES mass).
+**Step 7 — Pressure exergy rate [W]:**
+$$P_{exergy} = \dot{m}_{charge} \cdot R_{air} \cdot T_{amb} \cdot \ln(r)$$
 
 ---
 
@@ -249,69 +219,58 @@ $$P_{exergy} = \dot{m}_{charge} \cdot R_{air} \cdot T_{amb} \cdot \ln(r) \quad \
 
 **MATLAB Function:** `expander`
 
-**Inputs:** $P_{demand,req}$, $p_{store}$, $T_{tes,state}$, $\eta_{exp}$, $n_{poly}$, $R_{air}$, $c_p$, $p_{amb}$, $T_{amb}$, $T_{expand}$
+**Inputs:** $P_{demand,req}$, $p_{store}$, $T_{tes,state}$
+
+**Parameters:** $\eta_{exp}$, $n_{poly}$, $R_{air}$, $c_p$, $p_{amb}$, $T_{amb}$, $T_{expand}$, $\dot{m}_{max}$
 
 **Outputs:** $\dot{m}_{discharge}$, $\dot{Q}_{in,needed}$, $P_{output}$
 
-The expander implements a **dual-mode polytropic expansion** process. The polytropic index $n$ and the expansion inlet temperature $T_{in}$ are dynamically set depending on whether the TES salt bed temperature is high enough to preheat the air to the target expansion temperature $T_{expand} = 373$ K.
+**Step 1 — Expansion pressure ratio:**
+$$r_{exp} = \frac{p_{amb}}{p_{store}} \qquad [r_{exp} < 1 \text{ required}]$$
 
-**Step 1 — Required shaft power:**
-$$P_{discharge} = P_{demand,req} \quad \text{[W]}$$
-
-**Step 2 — Expansion pressure ratio:**
-$$r_{exp} = \frac{p_{amb}}{p_{store}} \qquad [r_{exp} < 1; \text{ return if } r_{exp} \geq 1]$$
-
-**Step 3 — Adiabatic index of air:**
+**Step 2 — Adiabatic index:**
 $$\gamma = \frac{c_p}{c_p - R_{air}}$$
 
-**Step 4 — Dynamic mode selection based on TES state:**
+**Step 3 — Dynamic mode selection:**
 
 $$\begin{cases}
-n = n_{poly}, \quad T_{in} = T_{expand} & \text{if } T_{tes,state} \geq T_{expand} \quad \textbf{(Near-Isothermal Mode)} \\
-n = \gamma, \quad T_{in} = T_{amb} & \text{if } T_{tes,state} < T_{expand} \quad \textbf{(Adiabatic Fallback Mode)}
+n = n_{poly},\quad T_{in} = T_{expand} & \text{if } T_{tes,state} \geq T_{expand} \quad \textbf{(Near-Isothermal)} \\
+n = \gamma,\quad T_{in} = T_{amb} & \text{if } T_{tes,state} < T_{expand} \quad \textbf{(Adiabatic Fallback)}
 \end{cases}$$
 
-**Step 5 — Polytropic expansion specific work [J/kg]:**
-$$w_{exp} = \frac{n}{n-1} \cdot R_{air} \cdot T_{in} \cdot \left(1 - r_{exp}^{\frac{n-1}{n}}\right) \quad \text{[J/kg]}$$
+**Step 4 — Polytropic expansion specific work [J/kg]:**
+$$w_{exp} = \frac{n}{n-1} \cdot R_{air} \cdot T_{in} \cdot \left(1 - r_{exp}^{\frac{n-1}{n}}\right)$$
 
-**Step 6 — Discharge mass flow rate [kg/s]:**
-$$\dot{m}_{discharge} = \frac{P_{discharge}}{\eta_{exp} \cdot w_{exp}} \quad \text{[kg/s]}$$
+**Step 5 — Thermodynamic discharge mass flow rate [kg/s]:**
+$$\dot{m}_{thermo} = \frac{P_{demand,req}}{\eta_{exp} \cdot w_{exp}}$$
+
+**Step 6 — Pipe flow limit [kg/s]:**
+$$\dot{m}_{discharge} = \min\!\left(\dot{m}_{thermo},\ \dot{m}_{max}\right)$$
+
+When flow-limited, actual output power is less than the requested demand:
+$$P_{output} = \dot{m}_{discharge} \cdot \eta_{exp} \cdot w_{exp} \leq P_{demand,req}$$
 
 **Step 7 — Expander outlet temperature [K]:**
-$$T_{out} = T_{in} \cdot r_{exp}^{\frac{n-1}{n}} \quad \text{[K]}$$
+$$T_{out} = T_{in} \cdot r_{exp}^{\frac{n-1}{n}}$$
 
-**Step 8 — Thermal power drawn from TES [W]:**
-
-In Near-Isothermal Mode ($T_{tes,state} \geq T_{expand}$), the TES must supply heat to the turbine to sustain the polytropic temperature profile. This is derived from the SFEE applied to the expander:
-$$\dot{Q}_{in,needed} = \frac{P_{discharge}}{\eta_{exp}} - \dot{m}_{discharge} \cdot c_p \cdot (T_{in} - T_{out}) \quad \text{[W]}$$
-$$\dot{Q}_{in,needed} = \max(\dot{Q}_{in,needed},\ 0) \quad \text{(non-negativity guard)}$$
-
-In Adiabatic Fallback Mode ($T_{tes,state} < T_{expand}$): $\dot{Q}_{in,needed} = 0$
-
-**Step 9 — Net mechanical power output [W]:**
-$$P_{output} = P_{discharge} \quad \text{[W]}$$
+**Step 8 — Thermal power drawn from TES [W] (Near-Isothermal Mode only):**
+$$\dot{Q}_{in,needed} = \frac{P_{output}}{\eta_{exp}} - \dot{m}_{discharge} \cdot c_p \cdot (T_{in} - T_{out}) \quad [\geq 0]$$
 
 ---
 
 ### 4.4 Cavern Dynamics (Mass-State Formulation)
 
-**Implementation:** Simulink Integrator block fed by the algebraic output of the Compressor and Expander blocks, followed by an Equation of State (EoS) block.
-
-To improve physical rigour and enable future real-gas extensions, the cavern is modelled using a **mass-state formulation**. The primary continuous state variable is the mass of air in the cavern ($m_{air}$).
-
-The rate of mass change is the net difference in mass flow rates:
+The cavern is modelled using a **mass-state formulation**. The primary continuous state variable is $m_{air}$ (mass of air stored):
 
 $$\boxed{\frac{dm_{air}}{dt} = \dot{m}_{charge} - \dot{m}_{discharge}} \quad \text{[kg/s]}$$
 
-**Initial condition:** $m_{air}(0) = m_{air,initial}$ (derived from initial cushion gas pressure)
-
-**Saturation:** $m_{air} \in [0,\ m_{air,max}]$
-
-The cavern pressure $p_{store}$ is then computed algebraically from the state variable $m_{air}$ using the Ideal Gas Law:
+Cavern pressure is then recovered algebraically via the Ideal Gas Law:
 
 $$p_{store} = \frac{m_{air} \cdot R_{air} \cdot T_{amb}}{V_{cavern}} \quad \text{[Pa]}$$
 
-The Simulink integrator clamps $m_{air}$ at the maximum safe air mass $m_{air,max}$. The controller also prevents charging when the computed $p_{store} \geq p_{store,max}$.
+**Initial condition:** $m_{air}(0)$ = cushion gas mass at 1.01 bar
+
+**Saturation:** $m_{air} \in [0,\ m_{air,max}]$
 
 ---
 
@@ -321,30 +280,37 @@ The Simulink integrator clamps $m_{air}$ at the maximum safe air mass $m_{air,ma
 
 **Inputs:** $P_{thermal}$, $\dot{Q}_{in,needed}$
 
-**Parameters:** $m_{tes}$, $c_{tes}$
+**Parameters:** $m_{tes}$, $c_{tes}$, $UA_{tes}$, $T_{amb}$, $T_{tes,initial}$, $T_{tes,max}$, $\Delta t$
 
-**Output:** $\dot{T}_{tes}$ [K/s]
+**Outputs:** $\dot{T}_{tes}$ [K/s], $P_{thermal,loss}$ [W]
 
-The TES is modelled as a **fixed-mass, variable-temperature** salt bed reservoir. The salt bed has a constant mass $m_{tes}$ derived from the user-specified tank volume and salt density ($m_{tes} = \rho_{tes} \cdot V_{tes}$). The thermal energy stored is tracked through the bed temperature $T_{tes}$, which rises when compression heat is deposited and falls when thermal energy is drawn for expansion preheating.
+The TES is modelled as a **fixed-mass, variable-temperature** salt bed with **passive thermal decay** to the environment.
 
-The thermal capacitance of the salt bed is:
+**Thermal capacitance:**
 $$C_{tes} = m_{tes} \cdot c_{tes} \quad \text{[J/K]}$$
 
-The net power balance across the TES determines the rate of temperature change:
+**Passive heat loss (Newton's law of cooling):**
+$$\dot{Q}_{loss} = UA_{tes} \cdot \max(0,\ T_{tes} - T_{amb}) \quad \text{[W]}$$
 
-$$\boxed{\frac{dT_{tes}}{dt} = \frac{P_{thermal} - \dot{Q}_{in,needed}}{m_{tes} \cdot c_{tes}}} \quad \text{[K/s]}$$
+where $UA_{tes} = U_{tes} \cdot A_{tes}$ [W/K] is the overall thermal conductance, computed from the insulation quality $U_{tes}$ [W/(m²·K)] and the TES surface area $A_{tes}$ (derived from $V_{tes}$ assuming an equivalent sphere).
 
-| Sign of $\dot{T}_{tes}$ | Physical interpretation |
+**Net temperature rate:**
+
+$$\boxed{\frac{dT_{tes}}{dt} = \frac{P_{thermal} - \dot{Q}_{in,needed} - \dot{Q}_{loss}}{m_{tes} \cdot c_{tes}}} \quad \text{[K/s]}$$
+
+**Implementation note — persistent variable:** Because $\dot{Q}_{loss}$ depends on the current $T_{tes}$ but no feedback wire exists, the block internally tracks $T_{tes}$ using a persistent variable that is advanced by forward Euler at each fixed timestep $\Delta t = 300$ s, mirroring the Simulink integrator exactly (same step size and saturation clamp).
+
+**$P_{thermal,loss}$ output:** Connect to a Scope block to monitor instantaneous heat loss to the environment throughout the simulation.
+
+| Signal | Physical interpretation |
 |---|---|
-| $\dot{T}_{tes} > 0$ | TES is heating up (charging) |
-| $\dot{T}_{tes} < 0$ | TES is cooling down (discharging) |
-| $\dot{T}_{tes} = 0$ | Thermal equilibrium or no active energy exchange |
+| $\dot{T}_{tes} > 0$ | TES heating (charging) |
+| $\dot{T}_{tes} < 0$ | TES cooling (discharging or decaying) |
+| $P_{thermal,loss} > 0$ | Active passive heat leak to environment |
 
-**Initial condition:** $T_{tes}(0) = T_{tes,initial}$ (typically $T_{amb}$, cold start)
+**Initial condition:** $T_{tes}(0) = T_{amb}$ (cold start)
 
 **Saturation:** $T_{tes} \in [T_{amb},\ T_{tes,max}]$
-
-The Simulink integrator enforces lower saturation at $T_{amb}$ and upper saturation at $T_{tes,max}$. The TES can only supply heat to the expander when $T_{tes} \geq T_{expand}$ (373 K).
 
 ---
 
@@ -352,102 +318,165 @@ The Simulink integrator enforces lower saturation at $T_{amb}$ and upper saturat
 
 **Implementation:** Simple Gain blocks on the top-level canvas.
 
-Transmission losses are applied directly between the grid and the internal I-CAES components using the efficiency factor $\eta_{tran}$.
-
-- **Charging (From grid to compressor):** $P_{charge,actual} = \eta_{tran} \cdot P_{charge,raw}$
-- **Discharging (From expander to grid):** $P_{delivered} = \eta_{tran} \cdot P_{output,raw}$
+- **Charging (grid → compressor):** $P_{charge,actual} = \eta_{tran} \cdot P_{charge,raw}$
+- **Discharging (expander → grid):** $P_{delivered} = \eta_{tran} \cdot P_{output,raw}$
 
 ---
 
 ## 5. Parameter Reference Table
 
-All parameters are configured in `preprocessing.m` using the SI unit library in `scripts/constants.m`.
+All parameters are configured in `preprocessing.m` and `design_params/design_param1.m`.
 
-### Physical Constants
+### Physical Constants (`preprocessing.m`)
 
-| Parameter | Symbol | Units | Description |
+| Parameter | Symbol | Value | Units | Description |
+|---|---|---|---|---|
+| `p_amb` | $p_{amb}$ | 101 325 | Pa | Atmospheric pressure |
+| `T_amb` | $T_{amb}$ | 297 | K | Ambient temperature (≈ 24 °C) |
+| `R_air` | $R_{air}$ | 287.05 | J/(kg·K) | Specific gas constant of air |
+| `c_p` | $c_p$ | 1 005 | J/(kg·K) | Specific heat of air at const. pressure |
+| `c_tes` | $c_{tes}$ | 880 | J/(kg·K) | Specific heat of TES salt bed |
+| `n_poly` | $n_{poly}$ | 1.14 | — | Polytropic index (near-isothermal) |
+
+### System Design Parameters (`design_params/design_param1.m`)
+
+| Parameter | Symbol | Value | Units | Description |
+|---|---|---|---|---|
+| `p_store_max` | $p_{store,max}$ | 100 | bar | Maximum safe cavern pressure |
+| `V_cavern` | $V_{cavern}$ | 5 × 10⁶ | m³ | Volume of underground salt cavern |
+| `V_tes` | $V_{tes}$ | 50 000 | m³ | TES tank volume |
+| `T_tes_max` | $T_{tes,max}$ | 773 | K (500 °C) | Maximum TES operating temperature |
+| `T_expand` | $T_{expand}$ | 373 | K (100 °C) | Target expansion inlet air temperature |
+| `U_tes` | $U_{tes}$ | 0.3 | W/(m²·K) | TES wall heat transfer coefficient (insulation quality; range 0.1–1.0) |
+| `D_pipe` | $D_{pipe}$ | — | m | Injection/extraction pipe diameter |
+| `v_flow` | $v_{flow}$ | — | m/s | Maximum air flow velocity in pipe |
+
+### Fixed Efficiencies and Limits (`preprocessing.m`)
+
+| Parameter | Symbol | Value | Units | Description |
+|---|---|---|---|---|
+| `eta_tran` | $\eta_{tran}$ | 0.97 | — | Grid transmission efficiency |
+| `eta_comp` | $\eta_{comp}$ | 0.833 | — | Compressor isentropic efficiency |
+| `eta_exp` | $\eta_{exp}$ | 0.82 | — | Expander isentropic efficiency |
+| `P_limit` | $P_{limit}$ | 300 | MW | Maximum compressor power draw |
+
+### Derived Quantities (computed in `preprocessing.m`)
+
+| Variable | Formula | Units | Description |
 |---|---|---|---|
-| `p_amb` | $p_{amb}$ | Pa | Atmospheric pressure |
-| `T_amb` | $T_{amb}$ | K | Ambient temperature |
-| `R_air` | $R_{air}$ | J/(kg·K) | Specific gas constant of air |
-| `c_p` | $c_p$ | J/(kg·K) | Specific heat of air at constant pressure |
-| `c_tes` | $c_{tes}$ | J/(kg·K) | Specific heat capacity of TES salt bed |
-| `n_poly` | $n_{poly}$ | — | Polytropic index (compression and near-isothermal expansion) |
-
-### System Design Parameters
-
-| Parameter | Symbol | Units | Description |
-|---|---|---|---|
-| `eta_tran` | $\eta_{tran}$ | — | Transmission/grid interface efficiency |
-| `eta_comp` | $\eta_{comp}$ | — | Compressor isentropic efficiency |
-| `eta_exp` | $\eta_{exp}$ | — | Expander isentropic efficiency |
-| `P_limit` | $P_{limit}$ | W | Maximum compressor input power from grid |
-| `p_store_max` | $p_{store,max}$ | Pa | Maximum safe cavern operating pressure |
-| `V_cavern` | $V_{cavern}$ | m³ | Volume of underground salt cavern |
-| `rho_tes` | $\rho_{tes}$ | kg/m³ | Density of TES salt bed material |
-| `V_tes` | $V_{tes}$ | m³ | TES tank volume (adjustable design parameter) |
-| `m_tes` | $m_{tes}$ | kg | TES bed mass (derived: $\rho_{tes} \cdot V_{tes}$) |
-| `T_tes_max` | $T_{tes,max}$ | K | Maximum TES operating temperature (adjustable) |
-| `T_expand` | $T_{expand}$ | K | Target air inlet temperature for expansion (373 K) |
+| `m_tes` | $\rho_{tes} \cdot V_{tes}$ | kg | TES salt bed mass |
+| `A_pipe` | $\frac{\pi}{4} D_{pipe}^2$ | m² | Pipe cross-sectional area |
+| `rho_amb` | $p_{amb} / (R_{air} T_{amb})$ | kg/m³ | Ambient air density |
+| `mdot_max` | $\rho_{amb} \cdot A_{pipe} \cdot v_{flow}$ | kg/s | **Maximum pipe mass flow rate** — caps both `mdot_charge` and `mdot_discharge` |
+| `r_tes_equiv` | $(3 V_{tes} / 4\pi)^{1/3}$ | m | Equivalent sphere radius of TES |
+| `A_tes` | $4\pi r_{tes}^2$ | m² | TES outer surface area |
+| `UA_tes` | $U_{tes} \cdot A_{tes}$ | W/K | **TES overall thermal conductance** — drives passive heat decay |
 
 ### Initial Conditions
 
-| Parameter | Symbol | Units | Description |
+| Parameter | Formula | Units | Description |
 |---|---|---|---|
-| `m_air_initial` | $m_{air}(0)$ | kg | Initial cavern air mass (derived from cushion gas) |
-| `T_tes_initial` | $T_{tes}(0)$ | K | Initial TES salt bed temperature |
+| `m_air_initial` | $1.01\ \text{bar} \cdot V_{cavern} / (R_{air} T_{amb})$ | kg | Initial cavern air mass (cushion gas) |
+| `m_air_max` | $p_{store,max} \cdot V_{cavern} / (R_{air} T_{amb})$ | kg | Maximum cavern air mass |
+| `T_tes_initial` | $T_{amb}$ | K | Initial TES temperature (cold start) |
 
 ---
 
 ## 6. Folder Structure
 
-The project repository includes folders for data analysis and optimization alongside the main model folder:
-
-- **`EST-model-main/`** (This folder)
-  - `ICAES_R2025a.slx` / `ICAES_R2025b.slx`: Main Simulink models.
-  - `preprocessing.m`: Initialisation script (loads data and parameters).
-  - `postprocessing.m`: Post-simulation plotting script.
-  - `data/`: Contains solar/wind supply and electrical demand profiles.
-  - `scripts/`: Utility scripts to load data and define physical constants.
-- **`data analysis/`** (In repository root)
-  - Contains scripts, Live Scripts (`.mlx`), and Jupyter notebooks to analyze, simulate, and optimize the model's performance under various parameter configurations.
+```
+EST-model-main/
+├── ICAES_R2025aa.slx              Main Simulink model
+├── ICAES_R2025aa_experiment.slx   Experiment variant
+├── preprocessing.m                InitFcn — loads data, computes all parameters
+├── postprocessing.m               StopFcn — generates plots (muted by default)
+├── design_params/
+│   └── design_param1.m            Default design configuration
+├── scripts/
+│   ├── constants.m                SI unit dictionary (global `unit` map)
+│   ├── loadSupplyData.m           Loads renewable supply CSV
+│   └── loadDemandData.m           Loads demand CSV
+├── data/
+│   ├── Team38_supply.csv          Annual renewable supply profile [MW, 5-min]
+│   └── Team38_demand.csv          Annual electrical demand profile [MW, 5-min]
+└── old_baseline/                  Archived baseline results
+```
 
 ---
 
 ## 7. Getting Started
 
 ### Prerequisites
-- MATLAB R2022b or newer with Simulink.
+
+- MATLAB R2022b or newer
+- Simulink
+- Stateflow (required for EML function blocks)
 
 ### Setup
-1. Open MATLAB and set the **Current Folder** to `EST-model-main/`. (The initialization script `preprocessing.m` requires this folder context to locate data and scripts).
+
+1. Open MATLAB and set the **Current Folder** to `EST-model-main/`.
+2. The `unit` global map is initialised by `scripts/constants.m`, which is called automatically via the model's `InitFcn`.
+3. To switch design scenarios, edit the selector in `preprocessing.m`:
+   ```matlab
+   design_params_file = fullfile('design_params', 'design_param1.m');
+   ```
+   and duplicate `design_param1.m` as `design_param2.m`, etc.
 
 ---
 
 ## 8. Running the Model
 
-1. Open `ICAES_R2025a.slx` (or `ICAES_R2025b.slx` for newer releases) in Simulink.
-2. Click **Run** (▶).
+1. Open `ICAES_R2025aa.slx` in Simulink.
+2. Click **Run (▶)**.
 
-The model automatically runs the initialization callback (`preprocessing.m`) to load data and parameters, runs the annual simulation (5-minute timesteps), and triggers the post-processing script (`postprocessing.m`) to plot results.
+The `InitFcn` automatically runs `preprocessing.m` to load data and populate the workspace. The `StopFcn` runs `postprocessing.m` after the simulation ends.
+
+> **First-time tip:** If Simulink reports `mdot_max`, `UA_tes`, or other new parameters as missing, run `preprocessing` once manually in the MATLAB Command Window to populate the base workspace, then click Run.
 
 ---
 
 ## 9. Output and Post-Processing
 
-The `postprocessing.m` script generates four figures after every simulation run:
+Post-processing is **muted by default** (a `return` statement at line 5 of `postprocessing.m`). Remove it to enable automatic plotting on simulation stop.
 
-| Figure | Plot(s) | Description |
+### Standard Figures
+
+| Figure | Layout | Description |
 |---|---|---|
-| **Figure 1** | 2×2 subplot | System state overview: Supply & Demand, Cavern Pressure, TES Water Mass, Load Balancing (Sell/Buy) |
-| **Figure 2** | 2×1 subplot | Mass flow rates (charging/discharging) and Energy split during charging (Thermal to TES vs. Exergy to Cavern) |
-| **Figure 3** | Pie chart | Annual demand energy sources: Direct Supply, I-CAES Discharge, Bought from Grid |
-| **Figure 4** | Time series | Deficit power vs. I-CAES discharging power — illustrates how much of the deficit is covered |
+| **Figure 1** — System State | 2×2 subplot | Supply & Demand / Cavern Pressure / TES Temperature / Load Balancing (Sell/Buy) |
+| **Figure 2** — I-CAES Flows | 2×1 subplot | Mass flow rates (charge/discharge) / Energy split during charging (Thermal → TES vs Exergy → Cavern) |
+| **Figure 3** — Energy Distribution | 2×1 pie charts | Demand sources (Direct Supply / I-CAES / Bought) / Supply routing (Direct / To Storage / Sold) |
+| **Figure 4** — Deficit Coverage | Time series | Grid deficit vs. I-CAES discharging power |
+
+### Efficiency & Loss Breakdown
+
+The efficiency block (in the Live Script or post-processing) computes:
+
+| Metric | Formula | Description |
+|---|---|---|
+| Round-trip efficiency | $E_{ICAES} / E_{surplus}$ | Fraction of stored surplus recovered as discharge |
+| Self-sufficiency | $(E_{direct} + E_{ICAES}) / E_{demand}$ | Fraction of demand met without buying |
+| $L_{tran,in}$ | $E_{in}(1 - \eta_{tran})$ | Transmission loss (charging path) |
+| $L_{comp}$ | $E_{in} \cdot \eta_{tran}(1 - \eta_{comp})$ | Compressor irreversibility loss |
+| $L_{exp}$ | $E_{in} \cdot \eta_{tran}\eta_{comp}(1 - \eta_{exp})$ | Expander irreversibility loss |
+| $L_{tran,out}$ | $E_{in} \cdot \eta_{tran}\eta_{comp}\eta_{exp}(1 - \eta_{tran})$ | Transmission loss (discharging path) |
+| $L_{tes,decay}$ | $\sum UA_{tes}(T_{tes} - T_{amb}) \cdot \Delta t$ | **Passive TES heat leak to environment** (now simulated dynamically) |
+| $L_{tes,stranded}$ | $m_{tes} c_{tes} \max(0,\, T_{tes,final} - T_{amb}) / \Delta t$ | Heat left in TES at year-end (never extracted) |
 
 ### Key Performance Metric
 
-The primary performance indicator is the **I-CAES supply fraction**, defined as:
-
 $$f_{ICAES} = \frac{E_{ICAES}}{E_{demand,total}} = \frac{\int P_{ICAES}(t)\,dt}{\int P_{demand}(t)\,dt}$$
 
-This represents the fraction of total annual electrical demand that is satisfied by the I-CAES system, as opposed to being bought from the external grid.
+This is the fraction of total annual electrical demand satisfied by the I-CAES system.
+
+---
+
+## 10. Model Change Log
+
+| Version | Change | Impact |
+|---|---|---|
+| R2025aa | **Mass-state cavern formulation** — integrates $m_{air}$ instead of $p_{store}$; $p_{store}$ recovered via Ideal Gas Law | Improves physical rigour; enables real-gas extensions |
+| R2025aa | **Pipe flow cap on $\dot{m}_{charge}$ and $\dot{m}_{discharge}$** — both capped at $\dot{m}_{max} = \rho_{amb} A_{pipe} v_{flow}$; actual power recomputed after capping | Prevents unphysical mass flow spikes at low cavern pressure |
+| R2025aa | **TES passive thermal decay** — $\dot{Q}_{loss} = UA_{tes}(T_{tes} - T_{amb})$ subtracted from TES energy balance every timestep; tracked via persistent variable (no feedback wire) | Realistically models TES heat loss to environment; monitored via `P_thermal_loss` output |
+| R2025aa | **`P_thermal_loss` output on TES block** — new output port for real-time monitoring of TES heat decay via Scope | Allows direct observation of instantaneous thermal decay power |
+| R2025aa | **New design parameters** — `U_tes` (insulation quality), `D_pipe`, `v_flow` now drive both $\dot{m}_{max}$ and $UA_{tes}$ | All physical limits are design-variant and configurable per scenario |
