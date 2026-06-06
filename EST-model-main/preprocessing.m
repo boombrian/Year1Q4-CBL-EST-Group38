@@ -64,4 +64,13 @@ m_air_max     = (p_store_max * V_cavern) / (R_air * T_amb);      % Maximum air m
 
 %% Derived Quantities (computed from above)
 
-A_pipe = pi/4 * D_pipe^2;                              % Pipe cross-sectional area [m^2]
+A_pipe   = pi/4 * D_pipe^2;                              % Pipe cross-sectional area [m^2]
+rho_amb  = p_amb / (R_air * T_amb);                      % Ambient air density [kg/m³]  (ideal gas)
+mdot_max = rho_amb * A_pipe * v_flow;                    % Max pipe mass flow rate [kg/s]  (= ρ·A·v_max)
+
+% TES thermal decay: passive heat loss to environment
+% Surface area derived from V_tes assuming an equivalent sphere (minimum surface / volume ratio).
+% Real geometry will have larger A_tes; scale U_tes down if tank is well-buried / insulated.
+r_tes_equiv = (3 * V_tes / (4 * pi))^(1/3);             % Equivalent sphere radius [m]
+A_tes       = 4 * pi * r_tes_equiv^2;                   % TES outer surface area [m²]
+UA_tes      = U_tes * A_tes;                             % Overall heat loss conductance [W/K]
