@@ -44,3 +44,9 @@ unit("kg") = 1.;
 unit("m")   = 1.;
 unit("m^2") = 1.;
 unit("m^3") = 1.;
+unit("km") = 1000*unit("m");
+%Electricity
+unit("V") = 1.;
+unit("kV") = 1000*unit("V");
+unit("Ohm") = 1.;
+unit("mOhm") = 1/1000*unit("Ohm");
