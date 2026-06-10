@@ -4,7 +4,7 @@ clear; clc;
 % 1. Configuration Setup
 portName = "COM6";          % <-- CHANGE to your actual Arduino COM port
 baudRate = 9600;            
-outputFileName = fullfile(pwd, 'data_4.txt'); 
+outputFileName = fullfile(pwd, 'tial_9.txt'); 
 
 % 2. Initialize Serial Port
 try
