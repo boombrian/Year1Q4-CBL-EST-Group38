@@ -14,14 +14,14 @@ V_cavern    = 5000000 * unit("m^3");                    % Cavern volume [m³]
 % Salt bed stores thermal energy as sensible heat.
 % Mass is constant; temperature rises/falls during charge/discharge.
 
-V_tes      = 50000 * unit("m^3");                       % TES tank volume (adjustable) [m³]
+V_tes      = 20000 * unit("m^3");                       % TES tank volume (adjustable) [m³]
 T_tes_max  = 773 * unit("K");                           % Max TES temperature (500°C, adjustable) [K]
 T_expand   = 373 * unit("K");                           % Expansion inlet air temperature (100°C) [K]
-U_tes      = 0.3;                                       % TES wall heat transfer coefficient [W/(m²·K)]
+U_tes      = 0.0;                                       % TES wall heat transfer coefficient [W/(m²·K)]
                                                         %   (insulation quality; typical range 0.1–1.0)
                                                         %   0.3 ≈ well-insulated industrial rock/salt bed
 
 %% Pipe / Flow Parameters
 
-D_pipe = 50 * unit("m");                               % Pipe diameter [m]
-v_flow = 2000 * unit("m")/unit("s");                      % Flow velocity [m/s]
+D_pipe = 0.5 * unit("m");                               % Pipe diameter [m]
+v_flow = 200 unit("m")/unit("s");                      % Flow velocity [m/s]
