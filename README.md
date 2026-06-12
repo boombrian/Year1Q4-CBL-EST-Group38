@@ -13,8 +13,8 @@ The repository is structured into distinct folders separating physical experimen
 ```
 Year1Q4-CBL-EST-Group38/
 ├── EST-model-main/             # Main I-CAES Simulink model and MATLAB components
-│   ├── ICAES_R2025a.slx        # Main Simulink Model (R2025a format)
-│   ├── ICAES_R2025b.slx        # Compatibility model (R2025b format)
+│   ├── ICAES_R2025aa.slx       # Main Simulink Model (R2025a format)
+│   ├── ICAES_R2025aa_real_a.slx # Experiment variant model
 │   ├── preprocessing.m         # Initialization callback (loads parameters & data)
 │   ├── postprocessing.m        # Simulation post-processing (generates performance plots)
 │   └── data/                   # Annual wind/solar supply and grid demand CSV profiles
@@ -22,16 +22,21 @@ Year1Q4-CBL-EST-Group38/
 ├── data analysis/              # Data post-processing and optimization scripts
 │   ├── data_analysis.mlx      # Live Script for system evaluation
 │   ├── modeling_analysis.mlx  # Live Script for model parameters
-│   └── plots.ipynb             # Jupyter Notebook for advanced plotting & parameter sweeps
+│   └── plots.ipynb             # Jupyter Notebook sweeps
 │
-├── MatLab-simulink/            # Archive of legacy/alternative Simulink models
-│   ├── EST.slx
-│   └── est_system.slx
+├── other_simulink_models/      # Archive of legacy/alternative Simulink models
+│   ├── EST.slx                 # Legacy model 1
+│   ├── ICAES_R2025b.slx        # Compatibility model version b
+│   └── est_system.slx          # Legacy model 2
 │
-├── pneumatic_data_collection.ino # Arduino source code for sensor data acquisition
-├── data_collection.m           # MATLAB script for real-time serial logging from Arduino
-├── post_processing.m           # MATLAB script for experimental statistical averaging and theory comparison
-└── pneumatic_data.txt          # Logged raw experimental data from the pneumatic test rig
+└── validation/                 # Physical pneumatic validation experiment & processing
+    ├── NEWEST_ARDUINO          # Arduino firmware for sensor reading
+    ├── NEWEST_MATLAB.m         # MATLAB real-time logging and GUI script
+    ├── new_processing.m        # Modern script for run alignment and validation
+    ├── data_1.txt to data_4.txt# Aligned, logged experimental runs
+    ├── tial_1.txt to tial_9.txt# Logged trials from test runs
+    ├── data_collection.m       # Legacy MATLAB serial logger
+    └── post_processing.m       # Legacy MATLAB validation analysis script
 ```
 
 ---
@@ -40,16 +45,16 @@ Year1Q4-CBL-EST-Group38/
 
 A core component of the project is a pneumatic charging experiment used to validate transient gas dynamics.
 
-### 2.1 Sensor Interface (`pneumatic_data_collection.ino`)
+### 2.1 Sensor Interface (`validation/NEWEST_ARDUINO`)
 The Arduino reads voltages from two analog pressure sensors and an airflow sensor:
 - **Pressure Sensors (e.g., SMC PSE570-02)**: Calibrated to map the sensor output voltage range linearly to its operating pressure range.
 - **Airflow Sensor (e.g., SMC PF2A521-F03-1)**: Calibrated to map the sensor output voltage range linearly to its flow rate range.
 - **Safety Protocol**: Implements a software safety trip if pressure exceeds a specified maximum safe pressure limit ($P_{safe}$) for longer than the safety threshold duration ($t_{safe}$).
 
-### 2.2 Real-time Logging (`data_collection.m`)
-An automated MATLAB script connects to the Arduino serial port (configured using the board's COM port and baud rate), samples the data streaming from the microcontroller, and logs timestamps, voltages, and calculated pressure values into `pneumatic_data.txt`.
+### 2.2 Real-time Logging (`validation/NEWEST_MATLAB.m`)
+An automated MATLAB script connects to the Arduino serial port (configured using the board's COM port and baud rate), samples the data streaming from the microcontroller, and logs timestamps, voltages, and calculated pressure values into `tial_9.txt`.
 
-### 2.3 Experimental Analysis (`post_processing.m`)
+### 2.3 Experimental Analysis (`validation/new_processing.m`)
 The MATLAB analysis script loads multiple experimental runs, performs uniform temporal interpolation, calculates the statistical mean and standard deviation, and overlays the experimental curves with theoretical thermodynamic models:
 - **Charging Pressure**: $P(t) = P_{max} \left(1 - e^{-t/\tau}\right)$
 - **Theoretical Flow Decay**: $Q(t) = Q_{max} e^{-t/\tau}$
@@ -64,7 +69,7 @@ The main simulation is located in the `EST-model-main/` folder. It models:
 - **Thermal Energy Storage (TES)**: Modeling a variable-mass hot water reservoir that captures compressor intercooling heat to reheat air during expansion.
 - **Dual-Mode Expansion**: Operating near-isothermally ($n_{poly}$) when hot water is available, and falling back to adiabatic expansion ($\gamma$) upon TES depletion.
 
-*For full physical and mathematical derivations of the I-CAES equations, see the detailed [EST-model-main/README.md](file:///D:/OneDrive%20-%20TU%20Eindhoven/Study/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/EST-model-main/README.md).*
+*For full physical and mathematical derivations of the I-CAES equations, see the detailed [EST-model-main/README.md](EST-model-main/README.md).*
 
 ---
 
@@ -73,13 +78,13 @@ The main simulation is located in the `EST-model-main/` folder. It models:
 To compile the firmware, run the serial logging, execute the simulations, and run the notebook, the following software environment is required:
 
 ### 4.1 MATLAB & Simulink Environment
-- **Version**: MATLAB R2022a or newer (Note: Simulink models are saved as R2025a and R2025b formats).
+- **Version**: MATLAB R2022a or newer (Note: Simulink models are saved as R2025aa formats).
 - **Required Toolboxes**:
   - Simulink
   - Stateflow (required for the MATLAB function blocks)
 
 ### 4.2 Arduino Toolchain
-- **Software**: Arduino IDE (v1.8.x or v2.x) to compile and upload `pneumatic_data_collection.ino`.
+- **Software**: Arduino IDE (v1.8.x or v2.x) to compile and upload the firmware.
 - **Microcontroller Hardware**: Arduino Uno, Mega, Nano, or compatible board.
 - **Sensors**: SMC PSE570-02 pressure sensors, SMC PF2A521-F03-1 flow sensor, or equivalent analog instrumentation.
 
@@ -100,16 +105,16 @@ To compile the firmware, run the serial logging, execute the simulations, and ru
 ### 5.1 Setting up and Running the Simulation
 1. Launch MATLAB.
 2. Change the **Current Folder** directory to `EST-model-main/`.
-3. Open `ICAES_R2025a.slx` (or `ICAES_R2025b.slx`).
+3. Open `ICAES_R2025aa.slx` (or `ICAES_R2025aa_real_a.slx`).
 4. Click **Run** in Simulink. The initialization callback (`preprocessing.m`) will run automatically to load supply/demand data and configure the parameters, and `postprocessing.m` will automatically generate system state plots upon simulation completion.
 
 ### 5.2 Setting up the Physical Data Acquisition
-1. Open `pneumatic_data_collection.ino` in the Arduino IDE.
+1. Open `validation/NEWEST_ARDUINO/NEWEST_ARDUINO.ino` (or the folder `validation/NEWEST_ARDUINO`) in the Arduino IDE.
 2. Connect the Arduino board to your computer and select the correct port and board type. Click **Upload**.
 3. Close the Arduino Serial Monitor.
-4. Open MATLAB and open `data_collection.m`. Modify line 5 (`portName = "COMx"`) to match the actual serial port allocated to your Arduino.
-5. Run `data_collection.m` in MATLAB to start the automatic data logging sequence.
-6. Open and run `post_processing.m` to load `pneumatic_data.txt` and generate comparative plots of experimental data vs. theory.
+4. Open MATLAB and open `validation/NEWEST_MATLAB.m`. Modify line 5 (`portName = "COMx"`) to match the actual serial port allocated to your Arduino.
+5. Run `NEWEST_MATLAB.m` in MATLAB to start the automatic data logging sequence.
+6. Open and run `validation/new_processing.m` to load data files (e.g. `data_1.txt` to `data_4.txt`) and generate comparative plots of experimental data vs. theory.
 
 ### 5.3 Running the Python Data Analysis Notebook
 1. Open your terminal or Command Prompt in the repository root folder.

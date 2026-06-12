@@ -28,6 +28,7 @@ The simulation is built from five coupled MATLAB Function blocks (implemented as
 7. [Getting Started](#7-getting-started)
 8. [Running the Model](#8-running-the-model)
 9. [Output and Post-Processing](#9-output-and-post-processing)
+10. [Model Change Log](#10-model-change-log)
 
 ---
 
@@ -340,16 +341,16 @@ All parameters are configured in `preprocessing.m` and `design_params/design_par
 
 ### System Design Parameters (`design_params/design_param1.m`)
 
-| Parameter | Symbol | Value | Units | Description |
-|---|---|---|---|---|
-| `p_store_max` | $p_{store,max}$ | 100 | bar | Maximum safe cavern pressure |
-| `V_cavern` | $V_{cavern}$ | 5 × 10⁶ | m³ | Volume of underground salt cavern |
-| `V_tes` | $V_{tes}$ | 50 000 | m³ | TES tank volume |
-| `T_tes_max` | $T_{tes,max}$ | 773 | K (500 °C) | Maximum TES operating temperature |
-| `T_expand` | $T_{expand}$ | 373 | K (100 °C) | Target expansion inlet air temperature |
-| `U_tes` | $U_{tes}$ | 0.3 | W/(m²·K) | TES wall heat transfer coefficient (insulation quality; range 0.1–1.0) |
-| `D_pipe` | $D_{pipe}$ | — | m | Injection/extraction pipe diameter |
-| `v_flow` | $v_{flow}$ | — | m/s | Maximum air flow velocity in pipe |
+| Parameter | Symbol | Nominal Value | Active Value | Units | Description |
+|---|---|---|---|---|---|
+| `p_store_max` | $p_{store,max}$ | 100 | 100 | bar | Maximum safe cavern pressure |
+| `V_cavern` | $V_{cavern}$ | 5 × 10⁶ | 5 × 10⁶ | m³ | Volume of underground salt cavern |
+| `V_tes` | $V_{tes}$ | 50 000 | 20 000 | m³ | TES tank volume |
+| `T_tes_max` | $T_{tes,max}$ | 773 | 773 | K (500 °C) | Maximum TES operating temperature |
+| `T_expand` | $T_{expand}$ | 373 | 373 | K (100 °C) | Target expansion inlet air temperature |
+| `U_tes` | $U_{tes}$ | 0.3 | 0.0 | W/(m²·K) | TES wall heat transfer coefficient (insulation quality; range 0.1–1.0) |
+| `D_pipe` | $D_{pipe}$ | — | 2.0 | m | Injection/extraction pipe diameter |
+| `v_flow` | $v_{flow}$ | — | 200 | m/s | Maximum air flow velocity in pipe |
 
 ### Fixed Efficiencies and Limits (`preprocessing.m`)
 
@@ -409,7 +410,7 @@ The following dynamic variables are calculated at each timestep and passed betwe
 ```
 EST-model-main/
 ├── ICAES_R2025aa.slx              Main Simulink model
-├── ICAES_R2025aa_experiment.slx   Experiment variant
+├── ICAES_R2025aa_real_a.slx       Experiment variant
 ├── preprocessing.m                InitFcn — loads data, computes all parameters
 ├── postprocessing.m               StopFcn — generates plots (muted by default)
 ├── design_params/

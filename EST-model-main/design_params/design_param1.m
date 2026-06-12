@@ -23,5 +23,5 @@ U_tes      = 0.0;                                       % TES wall heat transfer
 
 %% Pipe / Flow Parameters
 
-D_pipe = 0.5 * unit("m");                               % Pipe diameter [m]
-v_flow = 200 unit("m")/unit("s");                      % Flow velocity [m/s]
+D_pipe = 2 * unit("m");                               % Pipe diameter [m]
+v_flow = 200* unit("m")/unit("s");                      % Flow velocity [m/s]
