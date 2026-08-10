@@ -1,125 +1,186 @@
-# CBL Energy Storage (TU Eindhoven, Y1Q4, Group 38)
+# CBL Energy Storage — Near-Isothermal CAES (TU Eindhoven, Y1Q4, Group 38)
 
-This repository contains the modeling, simulation, and experimental data acquisition codebase for the **Challenge-Based Learning (CBL) Energy Storage** project at Eindhoven University of Technology (TU Eindhoven), Year 1, Quarter 4, developed by **Group 38**.
+This repository contains the complete modeling, simulation, thermodynamic analysis, and experimental validation codebase for the **Challenge-Based Learning (CBL) Energy Storage** project at Eindhoven University of Technology (TU Eindhoven), Year 1, Quarter 4, developed by **Group 38**.
 
-The project focuses on the thermodynamic analysis, simulation, and experimental validation of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. It couples a physical pneumatic transient experiment (utilizing an Arduino-based sensor suite and MATLAB logging) with a high-fidelity, first-principles Simulink model to evaluate large-scale grid balancing and thermal energy integration.
+The project focuses on the design, first-principles thermodynamic simulation, parameter optimization, and empirical validation of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. The codebase integrates physical transient pneumatic experiments (utilizing an Arduino sensor suite and MATLAB serial logging) with a high-fidelity Simulink model to evaluate annual grid-scale energy balancing, exergy efficiency, and thermal integration.
 
 ---
 
-## 1. Repository Structure
+## 1. Repository Structure & Submodule Index
 
-The repository is structured into distinct folders separating physical experiment code, main simulation blocks, and advanced data analysis:
+The repository is modularly organized into four main directories, each accompanied by a dedicated, detailed `README.md`:
 
 ```
 Year1Q4-CBL-EST-Group38/
-├── EST-model-main/             # Main I-CAES Simulink model and MATLAB components
-│   ├── ICAES_R2025aa.slx       # Main Simulink Model (R2025a format)
-│   ├── ICAES_R2025aa_real_a.slx # Experiment variant model
-│   ├── preprocessing.m         # Initialization callback (loads parameters & data)
-│   ├── postprocessing.m        # Simulation post-processing (generates performance plots)
-│   └── data/                   # Annual wind/solar supply and grid demand CSV profiles
+├── README.md                           # Main project documentation (this file)
 │
-├── data analysis/              # Data post-processing and optimization scripts
-│   ├── data_analysis.mlx      # Live Script for system evaluation
-│   ├── modeling_analysis.mlx  # Live Script for model parameters
-│   └── plots.ipynb             # Jupyter Notebook sweeps
+├── EST-model-main/                     # Main I-CAES Simulink model & MATLAB components
+│   ├── README.md                       # Detailed simulation & mathematical equation manual
+│   ├── ICAES_R2025aa.slx               # Primary Simulink model (mass-state cavern formulation)
+│   ├── ICAES_R2025aa_real_a.slx        # Experimental validation variant Simulink model
+│   ├── preprocessing.m                 # InitFcn callback: parameter calculation & CSV profile loading
+│   ├── postprocessing.m                # StopFcn callback: performance metric plotting & loss breakdown
+│   ├── design_params/                  # Scenario parameter configuration files
+│   └── data/                           # Annual 5-minute renewable supply & grid demand CSV profiles
 │
-├── other_simulink_models/      # Archive of legacy/alternative Simulink models
-│   ├── EST.slx                 # Legacy model 1
-│   ├── ICAES_R2025b.slx        # Compatibility model version b
-│   └── est_system.slx          # Legacy model 2
+├── data analysis/                      # Data post-processing, optimization & Jupyter notebooks
+│   ├── README.md                       # Comprehensive data analysis & derivation guide
+│   ├── data_analysis.mlx               # MATLAB Live Script: Full annual evaluation & energy balance
+│   ├── modeling_analysis.mlx           # MATLAB Live Script: Parameter sweeps & cavern volume optimization
+│   ├── plots.ipynb                     # Python Jupyter Notebook: Interactive visualizations
+│   ├── energy_distribution_model.m     # Standalone MATLAB script: Time-series thermal/pressure split model
+│   ├── ICAES_physical_model.md         # Detailed physical energy split & Helmholtz exergy derivations
+│   └── energy_distribution_derivation.md# Detailed extraction work & TES boost derivations
 │
-└── validation/                 # Physical pneumatic validation experiment & processing
-    ├── NEWEST_ARDUINO          # Arduino firmware for sensor reading
-    ├── NEWEST_MATLAB.m         # MATLAB real-time logging and GUI script
-    ├── new_processing.m        # Modern script for run alignment and validation
-    ├── data_1.txt to data_4.txt# Aligned, logged experimental runs
-    ├── tial_1.txt to tial_9.txt# Logged trials from test runs
-    ├── data_collection.m       # Legacy MATLAB serial logger
-    └── post_processing.m       # Legacy MATLAB validation analysis script
+├── validation/                         # Physical pneumatic validation experiment & sensor suite
+│   ├── README.md                       # Experimental hardware setup, calibration & post-processing manual
+│   ├── NEWEST_ARDUINO                  # Microcontroller firmware: sensor reading, ADC & safety trip
+│   ├── NEWEST_MATLAB.m                 # Real-time MATLAB serial logging & animated GUI interface
+│   ├── new_processing.m                # Multi-run peak synchronization & theoretical overlay script
+│   ├── post_processing.m               # Statistical mean/SD calculation & dP/dt derived airflow script
+│   └── data_1.txt to data_4.txt        # Aligned, synchronized physical experimental runs
+│
+└── other_simulink_models/              # Archive of legacy & cross-version compatibility models
+    ├── README.md                       # Model evolution history & version compatibility guide
+    ├── EST.slx                         # Original baseline legacy model (single-bus integrator)
+    ├── est_system.slx                  # Intermediate prototype model
+    └── ICAES_R2025b.slx                # Compatibility model pre-saved for MATLAB R2025b
 ```
 
 ---
 
-## 2. Experimental Data Acquisition & Post-Processing
+## 2. System Overview & Physical Concepts
 
-A core component of the project is a pneumatic charging experiment used to validate transient gas dynamics.
+### 2.1 The I-CAES Concept
 
-### 2.1 Sensor Interface (`validation/NEWEST_ARDUINO`)
-The Arduino reads voltages from two analog pressure sensors and an airflow sensor:
-- **Pressure Sensors (e.g., SMC PSE570-02)**: Calibrated to map the sensor output voltage range linearly to its operating pressure range.
-- **Airflow Sensor (e.g., SMC PF2A521-F03-1)**: Calibrated to map the sensor output voltage range linearly to its flow rate range.
-- **Safety Protocol**: Implements a software safety trip if pressure exceeds a specified maximum safe pressure limit ($P_{safe}$) for longer than the safety threshold duration ($t_{safe}$).
+Standard Compressed Air Energy Storage (CAES) compresses atmospheric air into underground salt caverns during periods of excess renewable supply and expands it through turbines during energy deficits. However, uncooled (adiabatic) compression generates significant heat that is lost to the environment, while unheated expansion drops air temperatures to cryogenic levels, degrading efficiency and risking turbine damage.
 
-### 2.2 Real-time Logging (`validation/NEWEST_MATLAB.m`)
-An automated MATLAB script connects to the Arduino serial port (configured using the board's COM port and baud rate), samples the data streaming from the microcontroller, and logs timestamps, voltages, and calculated pressure values into `tial_9.txt`.
+**Near-Isothermal CAES (I-CAES)** overcomes these limitations by capturing the thermal energy of compression in a **Thermal Energy Storage (TES)** salt-bed reservoir and re-injecting this heat during expansion.
 
-### 2.3 Experimental Analysis (`validation/new_processing.m`)
-The MATLAB analysis script loads multiple experimental runs, performs uniform temporal interpolation, calculates the statistical mean and standard deviation, and overlays the experimental curves with theoretical thermodynamic models:
-- **Charging Pressure**: $P(t) = P_{max} \left(1 - e^{-t/\tau}\right)$
-- **Theoretical Flow Decay**: $Q(t) = Q_{max} e^{-t/\tau}$
-- **Derived Flow**: Estimates physical airflow dynamically from the experimental pressure derivative ($\frac{dP}{dt}$) using ideal gas dynamics.
-
----
-
-## 3. Isothermal CAES Simulation Model
-
-The main simulation is located in the `EST-model-main/` folder. It models:
-- **Salt Cavern Dynamics**: Integrating mass flows to determine pressure exergy.
-- **Thermal Energy Storage (TES)**: Modeling a variable-mass hot water reservoir that captures compressor intercooling heat to reheat air during expansion.
-- **Dual-Mode Expansion**: Operating near-isothermally ($n_{poly}$) when hot water is available, and falling back to adiabatic expansion ($\gamma$) upon TES depletion.
-
-*For full physical and mathematical derivations of the I-CAES equations, see the detailed [EST-model-main/README.md](EST-model-main/README.md).*
-
----
-
-## 4. Dependencies & System Requirements
-
-To compile the firmware, run the serial logging, execute the simulations, and run the notebook, the following software environment is required:
-
-### 4.1 MATLAB & Simulink Environment
-- **Version**: MATLAB R2022a or newer (Note: Simulink models are saved as R2025aa formats).
-- **Required Toolboxes**:
-  - Simulink
-  - Stateflow (required for the MATLAB function blocks)
-
-### 4.2 Arduino Toolchain
-- **Software**: Arduino IDE (v1.8.x or v2.x) to compile and upload the firmware.
-- **Microcontroller Hardware**: Arduino Uno, Mega, Nano, or compatible board.
-- **Sensors**: SMC PSE570-02 pressure sensors, SMC PF2A521-F03-1 flow sensor, or equivalent analog instrumentation.
-
-### 4.3 Python Environment (For Data Analysis Notebooks)
-- **Version**: Python 3.8 or newer.
-- **Required Packages**:
-  - `numpy`
-  - `pandas`
-  - `matplotlib`
-  - `seaborn`
-  - `jupyter` / `notebook` (to run the Jupyter environment)
-  - `ipykernel`
+```
+                      +-------------------+
+                      | Renewable Supply  |
+                      |   (Wind / Solar)  |
+                      +---------+---------+
+                                |
+                                v
++------------------+   +-------------------+   +--------------------+
+|  Grid Demand /   |<--|    Controller     |-->| Grid Power Sale /  |
+| Deficit Purchase |   +---------+---------+   |  Surplus Storage   |
++------------------+             |             +--------------------+
+                                 |
+           +---------------------+---------------------+
+           |                                           |
+           v (Charging: P_net > 0)                     v (Discharging: P_net < 0)
++----------------------+                   +----------------------+
+| Multi-Stage Compressor|                  |   Expander Turbine   |
++----------+-----------+                   +-----------+----------+
+           |                                           ^
+           |-- Heat -> [ Thermal Energy Storage (TES) ]--| (Re-heat)
+           |                (Salt Bed Tank)            |
+           v                                           |
++------------------------------------------------------+--+
+|           Underground Salt Cavern (Mass Integration)     |
++---------------------------------------------------------+
+```
 
 ---
 
-## 5. Getting Started & Execution Instructions
+## 3. Key Mathematical Models & Background Theory
 
-### 5.1 Setting up and Running the Simulation
-1. Launch MATLAB.
-2. Change the **Current Folder** directory to `EST-model-main/`.
-3. Open `ICAES_R2025aa.slx` (or `ICAES_R2025aa_real_a.slx`).
-4. Click **Run** in Simulink. The initialization callback (`preprocessing.m`) will run automatically to load supply/demand data and configure the parameters, and `postprocessing.m` will automatically generate system state plots upon simulation completion.
+### 3.1 Polytropic Compression & Heat Partitioning
 
-### 5.2 Setting up the Physical Data Acquisition
-1. Open `validation/NEWEST_ARDUINO/NEWEST_ARDUINO.ino` (or the folder `validation/NEWEST_ARDUINO`) in the Arduino IDE.
-2. Connect the Arduino board to your computer and select the correct port and board type. Click **Upload**.
-3. Close the Arduino Serial Monitor.
-4. Open MATLAB and open `validation/NEWEST_MATLAB.m`. Modify line 5 (`portName = "COMx"`) to match the actual serial port allocated to your Arduino.
-5. Run `NEWEST_MATLAB.m` in MATLAB to start the automatic data logging sequence.
-6. Open and run `validation/new_processing.m` to load data files (e.g. `data_1.txt` to `data_4.txt`) and generate comparative plots of experimental data vs. theory.
+Gas compression follows a polytropic process $p V^n = \text{const}$ with index $n \approx 1.14$. Specific compression work $w_{\text{comp}}$ is:
 
-### 5.3 Running the Python Data Analysis Notebook
-1. Open your terminal or Command Prompt in the repository root folder.
-2. Launch the Jupyter Notebook environment:
-   ```bash
-   jupyter notebook
-   ```
-3. Navigate to `data analysis/plots.ipynb` and run the notebook cells to view the visualization and optimization scripts.
+$$w_{\text{comp}} = \frac{n}{n-1} R_{\text{air}} T_{\text{amb}} \left[ \left(\frac{p_{\text{store}}}{p_{\text{amb}}}\right)^{\frac{n-1}{n}} - 1 \right] \quad [\text{J/kg}]$$
+
+The input electrical work splits into stored pressure exergy and captured thermal energy ($q_{\text{thermal}}$) sent to the TES:
+
+$$q_{\text{thermal}} = w_{\text{comp}} - c_v (T_{\text{out}} - T_{\text{amb}}), \quad T_{\text{out}} = T_{\text{amb}} \left(\frac{p_{\text{store}}}{p_{\text{amb}}}\right)^{\frac{n-1}{n}}$$
+
+---
+
+### 3.2 Cavern Exergy & Helmholtz Cavern Sizing
+
+The mechanical exergy stored in a fixed cavern volume $V_{\text{cavern}}$ is derived from the **Helmholtz free energy** relative to atmospheric dead state $(p_{\text{atm}}, T_{\text{amb}})$:
+
+$$E_{\text{air}} = V_{\text{cavern}} \left[ p_{\text{store}} \ln\left(\frac{p_{\text{store}}}{p_{\text{atm}}}\right) - (p_{\text{store}} - p_{\text{atm}}) \right] \quad [\text{J}]$$
+
+To size the cavern volume required for a target energy storage capacity $E_{\text{target}}$:
+
+$$V_{\text{cavern}} = \frac{E_{\text{target}}}{p_{\text{store}} \ln\left(\dfrac{p_{\text{store}}}{p_{\text{atm}}}\right) - (p_{\text{store}} - p_{\text{atm}})}$$
+
+---
+
+### 3.3 Expander Thermal Boost Factor
+
+Re-heating expanding air with TES thermal energy ($T_{\text{expand}} = 373\text{ K}$) increases specific expansion work $w_{\text{exp}} = R_{\text{air}} T_{\text{in}} \ln(p_{\text{store}}/p_{\text{atm}})$ by:
+
+$$\text{Boost Factor} = \frac{T_{\text{expand}}}{T_{\text{amb}}} = \frac{373\text{ K}}{297\text{ K}} \approx 1.256 \quad (\mathbf{+25.6\%\text{ mechanical work boost}})$$
+
+---
+
+## 4. Software Dependencies & Requirements
+
+| Layer | Component | Required Version | Purpose |
+|---|---|---|---|
+| **Simulation** | MATLAB & Simulink | R2022b or newer (R2025a recommended) | Main simulation model & callback execution |
+| **Simulation** | Stateflow Toolbox | Included with MATLAB | Required for EML chart function blocks |
+| **Firmware** | Arduino IDE | v1.8.x or v2.x | Compiling & uploading sensor acquisition code |
+| **Hardware** | Arduino Microcontroller | Uno / Mega / Nano | Real-time ADC sampling & serial transmission |
+| **Sensors** | SMC PSE570-02 & PF2A521-F03-1 | Analog 1-5V output | Pressure & airflow measurements |
+| **Data Analysis**| Python Environment | Python 3.8+ (`pandas`, `numpy`, `matplotlib`, `jupyter`) | Interactive notebook execution |
+
+---
+
+## 5. Getting Started & Execution Guidance
+
+### 5.1 Running the Main Simulink Simulation
+
+1. Open MATLAB and set the Current Folder to `EST-model-main/`.
+2. Open `ICAES_R2025aa.slx` in Simulink.
+3. Click **Run (▶)**. 
+   - `preprocessing.m` runs automatically via `InitFcn` to compute parameters and load `data/Team38_supply.csv` & `data/Team38_demand.csv`.
+   - `postprocessing.m` runs automatically via `StopFcn` upon completion to display annual state trajectories and efficiency metrics.
+
+> For detailed block descriptions and EML equations, see [`EST-model-main/README.md`](file:///d:/OneDrive%20-%20TU%20Eindhoven/Study/TUe%20past%20courses/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/EST-model-main/README.md).
+
+---
+
+### 5.2 Executing Data Analysis & Parameter Sweeps
+
+- **MATLAB Live Scripts**: Navigate to `data analysis/` and open `data_analysis.mlx` or `modeling_analysis.mlx` in MATLAB Live Editor.
+- **Python Notebooks**: Launch Jupyter from the project root:
+  ```bash
+  jupyter notebook "data analysis/plots.ipynb"
+  ```
+
+> For full energy split derivations and data format specifications, see [`data analysis/README.md`](file:///d:/OneDrive%20-%20TU%20Eindhoven/Study/TUe%20past%20courses/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/data%20analysis/README.md).
+
+---
+
+### 5.3 Conducting Physical Pneumatic Validation
+
+1. **Hardware Setup**: Wire the SMC PSE570-02 pressure sensor to pin `A0` and the SMC PF2A521-F03-1 flow sensor to pin `A1` on your Arduino board.
+2. **Firmware Upload**: Open `validation/NEWEST_ARDUINO` in Arduino IDE, select your board/port, and upload the code. Close the Arduino Serial Monitor.
+3. **Data Logging**: Open `validation/NEWEST_MATLAB.m`, set `portName = "COMx"`, and run the script to launch the real-time GUI logger.
+4. **Post-Processing**: Run `validation/new_processing.m` to synchronize experimental runs with theoretical model curves.
+
+> For sensor pinouts, calibration formulas, and software safety trip details, see [`validation/README.md`](file:///d:/OneDrive%20-%20TU%20Eindhoven/Study/TUe%20past%20courses/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/validation/README.md).
+
+---
+
+### 5.4 Accessing Archived & Compatibility Models
+
+To run legacy model baselines or test on MATLAB R2025b:
+1. Navigate to `other_simulink_models/`.
+2. Load parameters into the workspace: `run('../EST-model-main/preprocessing.m')`.
+3. Open `EST.slx` or `ICAES_R2025b.slx`.
+
+> For version comparison tables and model progression notes, see [`other_simulink_models/README.md`](file:///d:/OneDrive%20-%20TU%20Eindhoven/Study/TUe%20past%20courses/CBL%20Energy%20Storage%20Y1Q4/Year1Q4-CBL-EST-Group38/other_simulink_models/README.md).
+
+---
+
+## 6. License & Course Attribution
+
+Developed for **CBL Energy Storage (Year 1 Quarter 4)** at **Eindhoven University of Technology (TU Eindhoven)** by **Group 38**. Released under the MIT License. See `LICENSE` for details.
