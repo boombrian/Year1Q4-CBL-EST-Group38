@@ -1,12 +1,12 @@
-# CBL Energy Storage — Near-Isothermal CAES (TU Eindhoven, Y1Q4, Group 38)
+# CBL Energy Storage System (4CBLA30) — Near-Isothermal CAES (TU Eindhoven, 2025/2026, Group 38)
 
-This repository contains the complete modeling, simulation, thermodynamic analysis, and experimental validation codebase for the **Challenge-Based Learning (CBL) Energy Storage** project at Eindhoven University of Technology (TU Eindhoven), Year 1, Quarter 4, developed by **Group 38**.
+This repository contains the modeling, simulation, thermodynamic analysis, and experimental validation codebase for the **[4CBLA30] CBL Energy Storage System** project at Eindhoven University of Technology, developed by **Group 38**.
 
-The project focuses on the design, first-principles thermodynamic simulation, parameter optimization, and empirical validation of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. The codebase integrates physical transient pneumatic experiments (utilizing an Arduino sensor suite and MATLAB serial logging) with a high-fidelity Simulink model to evaluate annual grid-scale energy balancing, exergy efficiency, and thermal integration.
+The project focuses on the design of a **Near-Isothermal Compressed Air Energy Storage (I-CAES)** system. The codebase integrates physical transient pneumatic experiments (utilizing an Arduino sensor suite and MATLAB serial logging) with a high-fidelity Simulink model to evaluate annual grid-scale energy balancing, exergy efficiency, and thermal integration.
 
 ---
 
-## 1. Repository Structure & Submodule Index
+## 1. Repository Structure
 
 The repository is modularly organized into four main directories, each accompanied by a dedicated, detailed `README.md`:
 
